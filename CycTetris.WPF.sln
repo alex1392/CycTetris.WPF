@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.539
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CycTetris.WPF", "CycTetris.WPF\CycTetris.WPF.csproj", "{37100258-0BF6-4B83-ABF3-32EFA5FB9417}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CycWpfLibrary", "..\CycWpfLibrary\CycWpfLibrary\CycWpfLibrary.csproj", "{DC9B1571-60B9-48D4-A147-24820D8E895B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{37100258-0BF6-4B83-ABF3-32EFA5FB9417}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37100258-0BF6-4B83-ABF3-32EFA5FB9417}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37100258-0BF6-4B83-ABF3-32EFA5FB9417}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37100258-0BF6-4B83-ABF3-32EFA5FB9417}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC9B1571-60B9-48D4-A147-24820D8E895B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC9B1571-60B9-48D4-A147-24820D8E895B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC9B1571-60B9-48D4-A147-24820D8E895B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC9B1571-60B9-48D4-A147-24820D8E895B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {74EDB9FE-DDB7-418D-861F-B2311763C480}
+	EndGlobalSection
+EndGlobal

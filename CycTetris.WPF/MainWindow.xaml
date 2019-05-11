@@ -1,0 +1,58 @@
+﻿<Window x:Class="CycTetris.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CycTetris.WPF"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:cyc="clr-namespace:CycWpfLibrary;assembly=CycWpfLibrary"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="MainWindow"
+        d:DataContext="{d:DesignInstance Type=local:ViewModel, IsDesignTimeCreatable=True}"
+        Height="600"
+        Width="400">
+  <Viewbox>
+    <Grid Width="1000"
+          Height="2000">
+      <ItemsControl ItemsSource="{Binding CellList}"
+                    Width="1000"
+                    Height="2000">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <UniformGrid Columns="10"
+                         Rows="20" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="{x:Type local:BlockType}">
+            <Rectangle Fill="{Binding Path=., Converter={local:TypeBrushConverter}}"
+                       Width="100"
+                       Height="100" />
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      
+      <!--GridLine-->
+      <Border>
+        <Border.Background>
+          <VisualBrush TileMode="Tile"
+                       ViewportUnits="Absolute">
+            <VisualBrush.Viewport>
+              <Rect Width="100"
+                    Height="100" />
+            </VisualBrush.Viewport>
+            <VisualBrush.Visual>
+              <Path Stroke="#99000000"
+                    StrokeThickness="2"
+                    Data="M -1,0 H 22
+                    M 0,21 H 22
+                    M 0,-1 V 22
+                    M 21,0 V 22" />
+            </VisualBrush.Visual>
+          </VisualBrush>
+        </Border.Background>
+      </Border>
+    </Grid>
+  </Viewbox>
+</Window>

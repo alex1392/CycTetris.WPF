@@ -28,24 +28,24 @@ namespace CycTetris.WPF
       { BlockCommandType.Hold, 4 },
     };
 
-    public IBlockState MoveState
+    public IHandleState MoveState
     {
-      get => States[IndexDict[BlockCommandType.Left]] as IBlockState;
+      get => States[IndexDict[BlockCommandType.Left]] as IHandleState;
       set => States[IndexDict[BlockCommandType.Left]] = value;
     }
-    public IBlockState RotateState
+    public IHandleState RotateState
     {
-      get => States[IndexDict[BlockCommandType.RotateCW]] as IBlockState;
+      get => States[IndexDict[BlockCommandType.RotateCW]] as IHandleState;
       set => States[IndexDict[BlockCommandType.RotateCW]] = value;
     }
-    public IBlockState DownState
+    public IHandleState DownState
     {
-      get => States[IndexDict[BlockCommandType.Down]] as IBlockState;
+      get => States[IndexDict[BlockCommandType.Down]] as IHandleState;
       set => States[IndexDict[BlockCommandType.Down]] = value;
     }
-    public IDropState DropState
+    public IState DropState
     {
-      get => States[3] as IDropState;
+      get => States[3] as IState;
       set => States[3] = value;
     }
 
@@ -54,11 +54,11 @@ namespace CycTetris.WPF
 
     }
 
-    public void HandleCommand(List<BlockCommand> commands, GameManager gm)
+    public void Handle(List<BlockCommand> commands, GameManager gm)
     {
       foreach (var command in commands)
       {
-        var newState = (States[IndexDict[command.Type]] as IBlockState).HandleCommand(gm, command);
+        var newState = (States[IndexDict[command.Type]] as IHandleState).Handle(command, gm);
         if (newState is null)
           continue;
         States[IndexDict[command.Type]] = newState;

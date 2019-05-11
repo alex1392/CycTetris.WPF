@@ -9,7 +9,7 @@ namespace CycTetris.WPF
 {
   public class DropStates
   {
-    public class NormalState : IUpdateState, IDropState
+    public class NormalState : IUpdateState
     {
       public NormalState()
       {
@@ -22,12 +22,10 @@ namespace CycTetris.WPF
 
       public int Delay { get; set; } = Constants.DT;
       public int DelayCount { get; set; } = 0;
-      public bool IsDropped { get; set; } = false;
 
       public IState Update(GameManager gm)
       {
-        IsDropped = gm.IsDropped();
-        if (IsDropped)
+        if (gm.IsDropped())
           return new LockDelayState();
 
         if (++DelayCount <= Delay)
@@ -39,20 +37,21 @@ namespace CycTetris.WPF
       }
     }
 
-    public class LockDelayState : IUpdateState, IDropState
+    public class LockDelayState : IUpdateState
     {
       public int Delay { get; set; } = Constants.LD;
       public static int DelayCount { get; set; } = 0;
-      public bool IsDropped { get; set; } = false;
 
       public IState Update(GameManager gm)
       {
-        IsDropped = gm.IsDropped();
-        if (!IsDropped)
+        if (!gm.IsDropped())
           return new NormalState(DelayCount);
 
         if (++DelayCount <= Delay)
           return null;
+
+        if (!gm.IsDropped())
+          return new NormalState(DelayCount);
 
         gm.Dropped();
         DelayCount = 0;

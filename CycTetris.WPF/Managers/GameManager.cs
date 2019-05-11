@@ -9,48 +9,58 @@ namespace CycTetris.WPF
 {
   public class GameManager : ICloneable
   {
+    private readonly static BlockFactory blockFactory = new BlockFactory();
+
     public Block BlockNow { get; set; }
     public Block BlockHold { get; set; }
     public Block BlockGhost { get; set; }
     public int NextCount { get; set; } = 5;
     public Queue<Block> BlockNexts { get; set; } = new Queue<Block>();
-    public Field Field { get; set; } = new Field();
-    public BlockFactory BlockFactory { get; set; } = new BlockFactory();
+
+    /// <summary>
+    /// Can only be modified through <see cref="Update"/>
+    /// </summary>
+    public Field Field { get; private set; } = new Field();
+    /// <summary>
+    /// Can only be modified through <see cref="RecordState"/>
+    /// </summary>
+    private GameManager gmOld;
 
     public void Initialize()
     {
-      BlockNow = BlockFactory.GetNextBlock();
-      BlockNexts.AddRange(BlockFactory.GetNextBlocks(NextCount));
+      BlockNow = blockFactory.GetNextBlock();
+      BlockNexts.AddRange(blockFactory.GetNextBlocks(NextCount));
       Field.Add(BlockNow);
     }
 
-    public bool Update(Block blockOld, bool removeOld = true)
+    /// <summary>
+    /// Update any change after <see cref="RecordState"/>
+    /// </summary>
+    /// <remarks>If <see cref="isDropped"/>, do not remove old block.</remarks>
+    public bool Update()
     {
-      if (blockOld == BlockNow)
+      if (gmOld.BlockNow == BlockNow)
         return false;
       if (!isDropped)
-        Field.Remove(blockOld);
+        Field.Remove(gmOld.BlockNow);
       else
         isDropped = false;
       Field.Add(BlockNow);
       return true;
     }
-
-    public void HardDrop()
+    /// <summary>
+    /// Clone itself to <see cref="gmOld"/>
+    /// </summary>
+    public void RecordState()
     {
-      throw new NotImplementedException();
-    }
-
-    public void Hold()
-    {
-      throw new NotImplementedException();
+      gmOld = Clone() as GameManager;
     }
 
     public bool IsLegal(Block block)
     {
       var parPos = block.GetPartialPos();
       var fieldTmp = Field.Clone() as Field;
-      fieldTmp.Remove(BlockNow);
+      fieldTmp.Remove(gmOld.BlockNow);
       return parPos.All(p => p.IsIn(fieldTmp, includeHH: true) && fieldTmp.IsEmpty(p));
     }
     public (bool, Block) MoveCheck(BlockCommand command)
@@ -93,13 +103,24 @@ namespace CycTetris.WPF
       blockTmp.Down();
       return !IsLegal(blockTmp);
     }
+    /// <summary>
+    /// Dropped flag for <see cref="Update"/>
+    /// </summary>
     private bool isDropped = false;
     public void Dropped()
     {
       isDropped = true;
       BlockNow = BlockNexts.Dequeue();
-      BlockNexts.Enqueue(BlockFactory.GetNextBlock());
-      //Field.Add(BlockNow);
+      BlockNexts.Enqueue(blockFactory.GetNextBlock());
+    }
+
+    public void HardDrop()
+    {
+      throw new NotImplementedException();
+    }
+    public void Hold()
+    {
+      throw new NotImplementedException();
     }
 
     public object Clone()

@@ -10,9 +10,9 @@ namespace CycTetris.WPF
 {
   public class MoveStates
   {
-    public class NormalState : IBlockState
+    public class NormalState : IHandleState
     {
-      public IBlockState HandleCommand(GameManager gm, BlockCommand command)
+      public IHandleState Handle(BlockCommand command, GameManager gm)
       {
         if (!command.IsPressed)
           return null;
@@ -25,7 +25,7 @@ namespace CycTetris.WPF
       }
     }
 
-    public class DasState : IBlockState, IDelayState
+    public class DasState : IHandleState, IDelayState, ITrackKeyState
     {
       public Key PressedKey { get; private set; }
 
@@ -37,7 +37,7 @@ namespace CycTetris.WPF
       public int Delay { get; set; } = Constants.DAS;
       public int DelayCount { get; set; } = 0;
 
-      public IBlockState HandleCommand(GameManager gm, BlockCommand command)
+      public IHandleState Handle(BlockCommand command, GameManager gm)
       {
         if (command.Key != PressedKey)
           return null;
@@ -45,23 +45,21 @@ namespace CycTetris.WPF
           return new NormalState();
         if (++DelayCount <= Delay)
           return null;
-        return new AutoShiftState(Constants.ASD, command.Key);
+        return new AutoShiftState(command.Key);
       }
     }
 
-    public class AutoShiftState : IBlockState, IDelayState, IDropState
+    public class AutoShiftState : IHandleState, IDelayState, ITrackKeyState
     {
       public Key PressedKey { get; private set; }
-      public int Delay { get; set; }
-      public AutoShiftState(int delay, Key key)
+      public int Delay { get; set; } = Constants.ASD;
+      public AutoShiftState(Key key)
       {
-        Delay = delay;
         PressedKey = key;
       }
 
       public int DelayCount { get; set; } = 0;
-      public bool IsDropped { get; set; } = false;
-      public IBlockState HandleCommand(GameManager gm, BlockCommand command)
+      public IHandleState Handle(BlockCommand command, GameManager gm)
       {
         if (command.Key != PressedKey)
           return null;

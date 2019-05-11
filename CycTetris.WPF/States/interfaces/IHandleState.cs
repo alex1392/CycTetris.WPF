@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace CycTetris.WPF
 {
-  public interface IBlockState : IState
+  public interface IHandleState : IState
   {
-    IBlockState HandleCommand(GameManager gm, BlockCommand command);
+    IHandleState Handle(BlockCommand command, GameManager gm);
   }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,26 +10,23 @@ namespace CycTetris.WPF
 {
   public class DownStates
   {
-    public class NormalState : IBlockState, IDropState
+    public class NormalState : IHandleState
     {
-      public bool IsDropped { get; set; } = false;
-
-      public IBlockState HandleCommand(GameManager gm, BlockCommand command)
+      public IHandleState Handle(BlockCommand command, GameManager gm)
       {
         if (!command.IsPressed)
           return null;
 
         var (canExecute, blockExecuted) = gm.MoveCheck(command);
-        IsDropped = !canExecute;
         if (!canExecute)
           return new LockDelayState(command.Key);
 
         gm.BlockNow = blockExecuted;
-        return new AutoShiftState(Constants.ASD, command.Key);
+        return new AutoShiftState(command.Key);
       }
     }
 
-    public class LockDelayState : IBlockState, IDropState
+    public class LockDelayState : IHandleState, ITrackKeyState
     {
       public Key PressedKey { get; private set; }
 
@@ -39,9 +37,8 @@ namespace CycTetris.WPF
 
       public int Delay { get; set; } = Constants.DLD;
       public static int DelayCount { get; set; } = 0;
-      public bool IsDropped { get; set; } = false;
 
-      public IBlockState HandleCommand(GameManager gm, BlockCommand command)
+      public IHandleState Handle(BlockCommand command, GameManager gm)
       {
         if (command.Key != PressedKey)
           return null;
@@ -52,25 +49,26 @@ namespace CycTetris.WPF
         if (++DelayCount <= Delay)
           return null;
 
+        if (!gm.IsDropped())
+          return new NormalState();
+        
         gm.Dropped();
         DelayCount = 0;
         return new NormalState();
       }
     }
 
-    public class AutoShiftState : IBlockState, IDelayState, IDropState
+    public class AutoShiftState : IHandleState, IDelayState, ITrackKeyState
     {
       public Key PressedKey { get; private set; }
-      public int Delay { get; set; }
-      public AutoShiftState(int delay, Key key)
+      public int Delay { get; set; } = Constants.ASD;
+      public AutoShiftState(Key key)
       {
-        Delay = delay;
         PressedKey = key;
       }
 
       public int DelayCount { get; set; } = 0;
-      public bool IsDropped { get; set; } = false;
-      public IBlockState HandleCommand(GameManager gm, BlockCommand command)
+      public IHandleState Handle(BlockCommand command, GameManager gm)
       {
         if (command.Key != PressedKey)
           return null;
@@ -80,7 +78,6 @@ namespace CycTetris.WPF
         if (++DelayCount > Delay)
         {
           var (canExecute, blockExecuted) = gm.MoveCheck(command);
-          IsDropped = !canExecute;
           if (!canExecute)
             return new LockDelayState(command.Key);
           gm.BlockNow = blockExecuted;

@@ -43,19 +43,16 @@ namespace CycTetris.WPF
 
       bool HandleInput()
       {
-        var blockOld = GameManager.BlockNow.Clone() as Block;
+        GameManager.RecordState();
         InputManager.HandleInput();
-        StateManager.HandleCommand(InputManager.BlockCommands, GameManager);
-        return GameManager.Update(blockOld, 
-          removeOld: (StateManager.DownState is IDropState dState) ? !(dState).IsDropped : true);
-
+        StateManager.Handle(InputManager.BlockCommands, GameManager);
+        return GameManager.Update();
       }
       bool Update()
       {
-        var blockOld = GameManager.BlockNow.Clone() as Block;
+        GameManager.RecordState();
         StateManager.Update(GameManager);
-        return GameManager.Update(blockOld, 
-          removeOld: (StateManager.DropState is IDropState dState) ? !(dState).IsDropped : true);
+        return GameManager.Update();
       }
       void Render()
       {

@@ -11,9 +11,9 @@ namespace CycTetris.WPF
 {
   public class RotateStates
   {
-    public class NormalState : IBlockState
+    public class NormalState : IHandleState
     {
-      public IBlockState HandleCommand(GameManager gm, BlockCommand command)
+      public IHandleState Handle(BlockCommand command, GameManager gm)
       {
         if (!command.IsPressed)
           return null;
@@ -35,16 +35,16 @@ namespace CycTetris.WPF
       }
     }
 
-    public class RotatedState : IBlockState
+    public class RotatedState : IHandleState, ITrackKeyState
     {
       public Key PressedKey { get; private set; }
 
       public RotatedState(Key key)
       {
-        this.PressedKey = key;
+        PressedKey = key;
       }
 
-      public IBlockState HandleCommand(GameManager gm, BlockCommand command)
+      public IHandleState Handle(BlockCommand command, GameManager gm)
       {
         if (command.Key != PressedKey)
           return null;

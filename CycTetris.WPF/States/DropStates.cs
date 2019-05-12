@@ -50,12 +50,12 @@ namespace CycTetris.WPF
         if (++DelayCount <= Delay)
           return null;
 
-        if (!gm.IsDropped())
-          return new NormalState(DelayCount);
-
-        gm.Dropped();
-        DelayCount = 0;
-        return new NormalState();
+        if (gm.IsDropped())
+        {
+          gm.Dropped();
+          DelayCount = 0;
+        }
+        return new NormalState(DelayCount);
       }
     }
   }

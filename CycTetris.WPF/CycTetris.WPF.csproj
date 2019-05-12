@@ -79,7 +79,7 @@
     <Compile Include="States\DropStates.cs" />
     <Compile Include="Managers\StateManager.cs" />
     <Compile Include="States\DownStates.cs" />
-    <Compile Include="States\ITrackKeyState.cs" />
+    <Compile Include="States\interfaces\ITrackKeyState.cs" />
     <Compile Include="States\RotateStates.cs" />
     <Compile Include="States\interfaces\IDelayState.cs" />
     <Compile Include="States\interfaces\IHandleState.cs" />

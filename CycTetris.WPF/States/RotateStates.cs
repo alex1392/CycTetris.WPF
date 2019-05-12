@@ -13,10 +13,6 @@ namespace CycTetris.WPF
         if (!command.IsPressed)
           return null;
 
-        if (gm.BlockNow.Type == BlockType.I)
-        {
-
-        }
         var funcs = new List<Func<BlockCommand, (bool, Block)>>
         {
           gm.MoveCheck, gm.KickCheck

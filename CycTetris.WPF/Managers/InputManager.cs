@@ -29,6 +29,7 @@ namespace CycTetris.WPF
         gm => gm.Hold()));
       BlockCommands.Add(new BlockCommand(BlockCommandType.HardDrop, Key.C,
         gm => gm.HardDrop()));
+      BlockCommands.Add(new BlockCommand(BlockCommandType.Reset, Key.Space, gm => gm.Reset()));
     }
 
     public List<BlockCommand> HandleInput()

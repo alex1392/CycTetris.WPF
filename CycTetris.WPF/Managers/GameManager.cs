@@ -101,28 +101,6 @@ namespace CycTetris.WPF
       Held?.Invoke(this, null);
     }
 
-    public void Hold()
-    {
-      if (BlockHold is null)
-      {
-        BlockHold = BlockNow;
-        BlockNow = BlockNexts.Dequeue();
-        BlockNexts.Enqueue(blockFactory.GetNextBlock());
-      }
-      else
-      {
-        var holdType = BlockHold.Type;
-        BlockHold = BlockNow;
-        BlockNow = new Block(holdType);
-      }
-      OnHeld();
-    }
-    public void HardDrop()
-    {
-      BlockNow.Pos = GetGhostPos();
-      TouchDown();
-    }
-
     private PointInt GetGhostPos()
     {
       var cellarray = Field.Cells;
@@ -145,10 +123,49 @@ namespace CycTetris.WPF
       var deltaY = deltaYs.Min();
       return BlockNow.Pos + (0, deltaY - 1);
     }
+    public void Hold()
+    {
+      if (BlockHold is null)
+      {
+        BlockHold = BlockNow;
+        BlockNow = BlockNexts.Dequeue();
+        BlockNexts.Enqueue(blockFactory.GetNextBlock());
+      }
+      else
+      {
+        var holdType = BlockHold.Type;
+        BlockHold = BlockNow;
+        BlockNow = new Block(holdType);
+      }
+      OnHeld();
+    }
+    public void HardDrop()
+    {
+      BlockNow.Pos = GetGhostPos();
+      TouchDown();
+    }
+
+    public event EventHandler Resetted;
+    protected virtual void OnResetted()
+    {
+      Resetted?.Invoke(this, null);
+    }
+
+    public void Reset()
+    {
+      Field.Cells.Clear();
+      BlockHold = null;
+      BlockNow = BlockNexts.Dequeue();
+      BlockNexts.Enqueue(blockFactory.GetNextBlock());
+
+      OnResetted();
+    }
 
     public void HandleCommand(List<BlockCommand> commands)
     {
-      
+      var resetCommand = commands.Find(c => c.Type == BlockCommandType.Reset);
+      if (resetCommand.IsPressed)
+        resetCommand.execute(this);
     }
 
     public void Update()

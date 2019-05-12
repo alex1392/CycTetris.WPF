@@ -32,6 +32,7 @@ namespace CycTetris.WPF
       GameManager.Initialize();
       GameManager.TouchedDown += GameManager_Dropped;
       GameManager.Held += GameManager_Held;
+      GameManager.Resetted += GameManager_Resetted;
 
       GameTimer.Elapsed += GameTimer_Elapsed;
       GameTimer.Start();
@@ -48,6 +49,12 @@ namespace CycTetris.WPF
     private void GameManager_Dropped(object sender, EventArgs e)
     {
       IsDropped = true;
+    }
+
+    private bool IsResetted = false;
+    private void GameManager_Resetted(object sender, EventArgs e)
+    {
+      IsResetted = true;
     }
 
     private void GameTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -73,24 +80,25 @@ namespace CycTetris.WPF
       }
       void Render()
       {
-        if (IsDropped || IsHeld && IsFirstHeld)
+        if (IsDropped || IsResetted || IsHeld && IsFirstHeld)
           OnPropertyChanged(nameof(BlockNexts));
 
-        if (IsHeld)
+        if (IsHeld || IsResetted)
           OnPropertyChanged(nameof(BlockHold));
 
-        if (IsDropped)
+        if (IsDropped || IsResetted)
           OnPropertyChanged(nameof(FieldCells));
 
-        if (GameManager.BlockNow != gmOld.BlockNow)
+        if (GameManager.BlockNow != gmOld.BlockNow || IsResetted)
         {
           OnPropertyChanged(nameof(BlockNow));
           OnPropertyChanged(nameof(BlockGhost));
-
         }
 
         if (IsDropped)
           IsDropped = false;
+        if (IsResetted)
+          IsResetted = false;
         if (IsHeld)
         {
           IsHeld = false;

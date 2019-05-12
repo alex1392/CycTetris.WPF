@@ -15,5 +15,6 @@ namespace CycTetris.WPF
     RotateCCW,
     HardDrop,
     Hold,
+    Reset,
   }
 }

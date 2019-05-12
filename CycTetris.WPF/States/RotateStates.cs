@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace CycTetris.WPF
@@ -18,7 +13,11 @@ namespace CycTetris.WPF
         if (!command.IsPressed)
           return null;
 
-        var funcs = new Collection<Func<BlockCommand, (bool, Block)>>
+        if (gm.BlockNow.Type == BlockType.I)
+        {
+
+        }
+        var funcs = new List<Func<BlockCommand, (bool, Block)>>
         {
           gm.MoveCheck, gm.KickCheck
         };
@@ -48,9 +47,9 @@ namespace CycTetris.WPF
       {
         if (command.Key != PressedKey)
           return null;
-        if (!command.IsPressed)
-          return new NormalState();
-        return null;
+        if (command.IsPressed)
+          return null;
+        return new NormalState();
       }
     }
   }

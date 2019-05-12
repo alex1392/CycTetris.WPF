@@ -7,12 +7,14 @@ namespace CycTetris.WPF
 {
   public static class Constants
   {
-    public const int FPS = 24;
-    public const int DAS = 5; // Delayed Auto Shift
+    public const int FPS = 30;
+    public const int DAS = 3; // Delayed Auto Shift
     public const int ASD = 0; // Auto Shift Delay
     public const int DT = 24; // Drop Time
     public const int LD = 24; // Lock Delay
+
     public const int DLD = 3; // Down Lock Delay
+    public static bool IsDLD = false;
 
     public static class PlayField
     {
@@ -326,87 +328,87 @@ namespace CycTetris.WPF
     public static readonly Dictionary<(int fromR, int toR, int testN), PointInt> WallKickDict = new Dictionary<(int fromR, int toR, int testN), PointInt>
     {
       { (0, 1, 1), new PointInt(-1, +0) },
-      { (0, 1, 2), new PointInt(-1, +1) },
-      { (0, 1, 3), new PointInt(+0, -2) },
-      { (0, 1, 4), new PointInt(-1, -2) },
+      { (0, 1, 2), new PointInt(-1, -1) },
+      { (0, 1, 3), new PointInt(+0, +2) },
+      { (0, 1, 4), new PointInt(-1, +2) },
 
       { (1, 0, 1), new PointInt(+1, +0) },
-      { (1, 0, 2), new PointInt(+1, -1) },
-      { (1, 0, 3), new PointInt(+0, +2) },
-      { (1, 0, 4), new PointInt(+1, +2) },
+      { (1, 0, 2), new PointInt(+1, +1) },
+      { (1, 0, 3), new PointInt(+0, -2) },
+      { (1, 0, 4), new PointInt(+1, -2) },
 
       { (1, 2, 1), new PointInt(+1, +0) },
-      { (1, 2, 2), new PointInt(+1, -1) },
-      { (1, 2, 3), new PointInt(+0, +2) },
-      { (1, 2, 4), new PointInt(+1, +2) },
+      { (1, 2, 2), new PointInt(+1, +1) },
+      { (1, 2, 3), new PointInt(+0, -2) },
+      { (1, 2, 4), new PointInt(+1, -2) },
 
       { (2, 1, 1), new PointInt(-1, +0) },
-      { (2, 1, 2), new PointInt(-1, +1) },
-      { (2, 1, 3), new PointInt(+0, -2) },
-      { (2, 1, 4), new PointInt(-1, -2) },
+      { (2, 1, 2), new PointInt(-1, -1) },
+      { (2, 1, 3), new PointInt(+0, +2) },
+      { (2, 1, 4), new PointInt(-1, +2) },
 
-      { (2, 3, 1), new PointInt(+1, +0) },
-      { (2, 3, 2), new PointInt(+1, +1) },
-      { (2, 3, 3), new PointInt(+0, -2) },
-      { (2, 3, 4), new PointInt(+1, -2) },
+      { (2, 3, 1), new PointInt(+1, -0) },
+      { (2, 3, 2), new PointInt(+1, -1) },
+      { (2, 3, 3), new PointInt(+0, +2) },
+      { (2, 3, 4), new PointInt(+1, +2) },
 
       { (3, 2, 1), new PointInt(-1, +0) },
-      { (3, 2, 2), new PointInt(-1, -1) },
-      { (3, 2, 3), new PointInt(+0, +2) },
-      { (3, 2, 4), new PointInt(-1, +2) },
+      { (3, 2, 2), new PointInt(-1, +1) },
+      { (3, 2, 3), new PointInt(+0, -2) },
+      { (3, 2, 4), new PointInt(-1, -2) },
 
       { (3, 0, 1), new PointInt(-1, +0) },
-      { (3, 0, 2), new PointInt(-1, -1) },
-      { (3, 0, 3), new PointInt(+0, +2) },
-      { (3, 0, 4), new PointInt(-1, +2) },
+      { (3, 0, 2), new PointInt(-1, +1) },
+      { (3, 0, 3), new PointInt(+0, -2) },
+      { (3, 0, 4), new PointInt(-1, -2) },
 
       { (0, 3, 1), new PointInt(+1, +0) },
-      { (0, 3, 2), new PointInt(+1, +1) },
-      { (0, 3, 3), new PointInt(+0, -2) },
-      { (0, 3, 4), new PointInt(+1, -2) },
+      { (0, 3, 2), new PointInt(+1, -1) },
+      { (0, 3, 3), new PointInt(+0, +2) },
+      { (0, 3, 4), new PointInt(+1, +2) },
     };
 
     public static readonly Dictionary<(int fromR, int toR, int testN), PointInt> IWallKickDict = new Dictionary<(int fromR, int toR, int testN), PointInt>
     {
       { (0, 1, 1), new PointInt(-2, +0) },
       { (0, 1, 2), new PointInt(+1, +0) },
-      { (0, 1, 3), new PointInt(-2, -1) },
-      { (0, 1, 4), new PointInt(+1, +2) },
+      { (0, 1, 3), new PointInt(-2, +1) },
+      { (0, 1, 4), new PointInt(+1, -2) },
 
       { (1, 0, 1), new PointInt(+2, +0) },
       { (1, 0, 2), new PointInt(-1, +0) },
-      { (1, 0, 3), new PointInt(+2, +1) },
-      { (1, 0, 4), new PointInt(-1, -2) },
+      { (1, 0, 3), new PointInt(+2, -1) },
+      { (1, 0, 4), new PointInt(-1, +2) },
 
       { (1, 2, 1), new PointInt(-1, +0) },
       { (1, 2, 2), new PointInt(+2, +0) },
-      { (1, 2, 3), new PointInt(-1, +2) },
-      { (1, 2, 4), new PointInt(+2, -1) },
+      { (1, 2, 3), new PointInt(-1, -2) },
+      { (1, 2, 4), new PointInt(+2, +1) },
 
       { (2, 1, 1), new PointInt(+1, +0) },
       { (2, 1, 2), new PointInt(-2, +0) },
-      { (2, 1, 3), new PointInt(+1, -2) },
-      { (2, 1, 4), new PointInt(-2, +1) },
+      { (2, 1, 3), new PointInt(+1, +2) },
+      { (2, 1, 4), new PointInt(-2, -1) },
 
       { (2, 3, 1), new PointInt(+2, +0) },
       { (2, 3, 2), new PointInt(-1, +0) },
-      { (2, 3, 3), new PointInt(+2, +1) },
-      { (2, 3, 4), new PointInt(-1, +2) },
+      { (2, 3, 3), new PointInt(+2, -1) },
+      { (2, 3, 4), new PointInt(-1, -2) },
 
       { (3, 2, 1), new PointInt(-2, +0) },
       { (3, 2, 2), new PointInt(+1, +0) },
-      { (3, 2, 3), new PointInt(-2, -1) },
-      { (3, 2, 4), new PointInt(+1, -2) },
+      { (3, 2, 3), new PointInt(-2, +1) },
+      { (3, 2, 4), new PointInt(+1, +2) },
 
       { (3, 0, 1), new PointInt(+1, +0) },
       { (3, 0, 2), new PointInt(-2, +0) },
-      { (3, 0, 3), new PointInt(+1, -2) },
-      { (3, 0, 4), new PointInt(-2, +1) },
+      { (3, 0, 3), new PointInt(+1, +2) },
+      { (3, 0, 4), new PointInt(-2, -1) },
 
       { (0, 3, 1), new PointInt(-1, +0) },
       { (0, 3, 2), new PointInt(+2, +0) },
-      { (0, 3, 3), new PointInt(-1, +2) },
-      { (0, 3, 4), new PointInt(+2, -1) },
+      { (0, 3, 3), new PointInt(-1, -2) },
+      { (0, 3, 4), new PointInt(+2, +1) },
     };
     public const int testN = 4;
 

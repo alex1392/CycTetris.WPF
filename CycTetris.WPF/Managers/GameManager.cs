@@ -9,7 +9,7 @@ namespace CycTetris.WPF
 {
   public class GameManager : ICloneable
   {
-    private readonly static BlockFactory blockFactory = new BlockFactory();
+    private static readonly BlockFactory blockFactory = new BlockFactory();
 
     public Block BlockNow { get; set; }
     public Block BlockHold { get; set; }
@@ -55,11 +55,10 @@ namespace CycTetris.WPF
     {
       gmOld = Clone() as GameManager;
     }
-
     public bool IsLegal(Block block)
     {
       var parPos = block.GetPartialPos();
-      var fieldTmp = Field.Clone() as Field;
+      var fieldTmp = gmOld.Field.Clone() as Field;
       fieldTmp.Remove(gmOld.BlockNow);
       return parPos.All(p => p.IsIn(fieldTmp, includeHH: true) && fieldTmp.IsEmpty(p));
     }
@@ -80,13 +79,12 @@ namespace CycTetris.WPF
       command.Execute(gmMoved);
 
       var blockMoved = gmMoved.BlockNow;
-      var blockTest = blockMoved.Clone() as Block;
-      var wallKickDict = gmMoved.BlockNow.Type == BlockType.I ?
+      var wallKickDict = blockMoved.Type == BlockType.I ?
         IWallKickDict : WallKickDict;
-      var testCount = 1;
       for (var i = 1; i <= testN; i++)
       {
-        blockTest.Move(wallKickDict[(BlockNow.Rot, blockMoved.Rot, testCount)]);
+        var blockTest = blockMoved.Clone() as Block;
+        blockTest.Move(wallKickDict[(gmOld.BlockNow.Rot, blockMoved.Rot, i)]);
         if (IsLegal(blockTest))
           return (true, blockTest);
       }

@@ -19,7 +19,7 @@ namespace CycTetris.WPF
 
         var (canExecute, blockExecuted) = gm.MoveCheck(command);
         if (!canExecute)
-          return new LockDelayState(command.Key);
+          return Constants.IsDLD ? new LockDelayState(command.Key) : null; 
 
         gm.BlockNow = blockExecuted;
         return new AutoShiftState(command.Key);
@@ -79,7 +79,7 @@ namespace CycTetris.WPF
         {
           var (canExecute, blockExecuted) = gm.MoveCheck(command);
           if (!canExecute)
-            return new LockDelayState(command.Key);
+            return Constants.IsDLD ? new LockDelayState(command.Key) : null;
           gm.BlockNow = blockExecuted;
           DelayCount = 0;
         }

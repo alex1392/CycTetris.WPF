@@ -14,7 +14,11 @@ namespace CycTetris.WPF
     public readonly int w = PlayField.w;
     public readonly int h = PlayField.h;
     public readonly int hh = PlayField.hh;
-    public BlockType[,] Cells { get; set; } 
+
+    /// <summary>
+    /// Can only be modified through <see cref="Add(Block)"/> and <see cref="Remove(Block)"/>
+    /// </summary>
+    public BlockType[,] Cells { get; private set; } 
       = new BlockType[PlayField.w, PlayField.h];
 
     public bool IsEmpty(PointInt p)
@@ -42,7 +46,6 @@ namespace CycTetris.WPF
         Cells[p.X, p.Y] = BlockType.None;
       }
     }
-
 
     public bool IsIn(PointInt p, bool includeHH = false)
     {

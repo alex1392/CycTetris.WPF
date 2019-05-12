@@ -47,7 +47,8 @@ namespace CycTetris.WPF
       {
         GameManager.RecordState();
         var commands = InputManager.HandleInput();
-        StateManager.Handle(commands, GameManager);
+        GameManager.HandleCommand(commands);
+        StateManager.HandleCommand(commands, GameManager);
         return GameManager.Update();
       }
       bool Update()

@@ -1,6 +1,7 @@
 ﻿using CycWpfLibrary;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using static CycTetris.WPF.Constants;
 using static CycWpfLibrary.Math;
@@ -19,13 +20,12 @@ namespace CycTetris.WPF
     }
 
     public Block BlockNow { get; set; }
-    public Block BlockHold { get; set; }
-    public Block BlockGhost { get; set; }
-    public int NextCount { get; set; } = 5;
-    public Queue<Block> BlockNexts { get; set; } = new Queue<Block>();
-
+    public Block BlockGhost { get; private set; }
+    public Block BlockHold { get; private set; }
+    public int NextCount { get; private set; } = 5;
+    public Queue<Block> BlockNexts { get; private set; } = new Queue<Block>();
     /// <summary>
-    /// Can only be modified through <see cref="Update"/>
+    /// Can only be modified through <see cref="Update()"/>
     /// </summary>
     public Field Field { get; private set; } = new Field();
 
@@ -140,8 +140,30 @@ namespace CycTetris.WPF
     }
     public void HardDrop()
     {
-      throw new NotImplementedException();
+      
     }
+
+    private PointInt GetGhostPos()
+    {
+      var cellarray = Field.Cells;
+      var uniquePos = BlockNow.GetPartialPos().GroupBy(p => p.X, (x, p) => p).Select(g => g.FindMax(p => p.Y));
+      var deltaYs = new List<int>();
+      foreach (var p in uniquePos)
+      {
+        var cellsBelow = cellarray.GetCol(p.X).GetRange(p.Y);
+        var rowBelow = cellsBelow.FindAllIndexOf(c => c != BlockType.None).Min();
+        deltaYs.Add(rowBelow - p.Y);
+      }
+      var deltaY = deltaYs.Min();
+      return BlockNow.Pos - (0, deltaY);
+    }
+
+    public void HandleCommand(List<BlockCommand> commands)
+    {
+      var hardDropCommand = commands.Find(c => c.Type == BlockCommandType.HardDrop);
+      hardDropCommand.execute(this);
+    }
+
     public object Clone()
     {
       return new GameManager

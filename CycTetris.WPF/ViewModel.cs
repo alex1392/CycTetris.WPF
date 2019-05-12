@@ -17,6 +17,7 @@ namespace CycTetris.WPF
     public Block[] BlockNexts => GameManager.BlockNexts.ToArray();
     public Block BlockHold => GameManager.BlockHold;
     public Block BlockNow => GameManager.BlockNow;
+    public Block BlockGhost => GameManager.BlockGhost;
 
     private readonly InputManager InputManager = new InputManager();
     private readonly StateManager StateManager = new StateManager();
@@ -82,7 +83,11 @@ namespace CycTetris.WPF
           OnPropertyChanged(nameof(FieldCells));
 
         if (GameManager.BlockNow != gmOld.BlockNow)
+        {
           OnPropertyChanged(nameof(BlockNow));
+          OnPropertyChanged(nameof(BlockGhost));
+
+        }
 
         if (IsDropped)
           IsDropped = false;

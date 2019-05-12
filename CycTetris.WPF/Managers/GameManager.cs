@@ -124,16 +124,24 @@ namespace CycTetris.WPF
     private PointInt GetGhostPos()
     {
       var cellarray = Field.Cells;
-      var uniquePos = BlockNow.ParPos.GroupBy(p => p.X, (x, p) => p).Select(g => g.FindMax(p => p.Y));
+      var uniquePos = BlockNow.ParPos
+        .Where(p => p.Y >= 0)
+        .GroupBy(p => p.X, (x, p) => p)
+        .Select(g => g.FindMax(p => p.Y));
       var deltaYs = new List<int>();
       foreach (var p in uniquePos)
       {
-        var cellsBelow = cellarray.GetCol(p.X).GetRange(p.Y);
-        var rowBelow = cellsBelow.FindAllIndexOf(c => c != BlockType.None)?.Min() ?? cellsBelow.Count;
-        deltaYs.Add(rowBelow - p.Y);
+        var cellsBelow = cellarray.GetRow(p.X).GetRange(p.Y);
+        var blockBelowIdx = cellsBelow.FindAllIndexOf(c => c != BlockType.None);
+        int rowBelow;
+        if (blockBelowIdx.Count() > 0)
+          rowBelow = blockBelowIdx.Min();
+        else
+          rowBelow = cellsBelow.Count;
+        deltaYs.Add(rowBelow);
       }
       var deltaY = deltaYs.Min();
-      return BlockNow.Pos - (0, deltaY);
+      return BlockNow.Pos + (0, deltaY - 1);
     }
 
     public void HandleCommand(List<BlockCommand> commands)
@@ -144,7 +152,8 @@ namespace CycTetris.WPF
 
     public void Update()
     {
-      //BlockGhost.Pos = GetGhostPos();
+      BlockGhost.Pos = GetGhostPos();
+      BlockGhost.Rot = BlockNow.Rot;
     }
 
     public object Clone()

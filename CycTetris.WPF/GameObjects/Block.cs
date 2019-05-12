@@ -8,7 +8,7 @@ using static CycTetris.WPF.Constants;
 
 namespace CycTetris.WPF
 {
-  public class Block : ObservableObject, ICloneable
+  public class Block : ICloneable
   {
     private int _rotation = 0;
     private PointInt pos;

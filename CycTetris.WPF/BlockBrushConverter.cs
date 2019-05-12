@@ -45,7 +45,7 @@ namespace CycTetris.WPF
           break;
       }
       if (parameter != null)
-        color = color.SetAlpha((double)parameter);
+        color = color.SetAlpha(double.Parse(parameter.ToStringEx()));
       return new SolidColorBrush(color);
     }
 

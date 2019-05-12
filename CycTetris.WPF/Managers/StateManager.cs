@@ -13,8 +13,9 @@ namespace CycTetris.WPF
       new MoveStates.NormalState(),
       new RotateStates.NormalState(),
       new DownStates.NormalState(),
-      new DropStates.NormalState(),
+      new FallStates.NormalState(),
       new HoldStates.NormalState(),
+      new HardDropStates.NormalState(),
     };
     public static Dictionary<BlockCommandType, int> IndexDict = new Dictionary<BlockCommandType, int>
     {
@@ -24,6 +25,7 @@ namespace CycTetris.WPF
       { BlockCommandType.RotateCCW, 1 },
       { BlockCommandType.Down, 2 },
       { BlockCommandType.Hold, 4 },
+      { BlockCommandType.HardDrop, 5 },
     };
 
     public void Initialize()

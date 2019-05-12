@@ -16,6 +16,7 @@ namespace CycTetris.WPF
     {
       BlockNow = blockFactory.GetNextBlock();
       BlockNexts.AddRange(blockFactory.GetNextBlocks(NextCount));
+      Update();
     }
 
     private Block blockNow;
@@ -118,7 +119,8 @@ namespace CycTetris.WPF
     }
     public void HardDrop()
     {
-
+      BlockNow.Pos = GetGhostPos();
+      TouchDown();
     }
 
     private PointInt GetGhostPos()
@@ -146,8 +148,7 @@ namespace CycTetris.WPF
 
     public void HandleCommand(List<BlockCommand> commands)
     {
-      var hardDropCommand = commands.Find(c => c.Type == BlockCommandType.HardDrop);
-      hardDropCommand.execute(this);
+      
     }
 
     public void Update()

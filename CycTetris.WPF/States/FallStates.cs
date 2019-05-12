@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CycTetris.WPF
 {
-  public class DropStates
+  public class FallStates
   {
     public class NormalState : IUpdateState
     {

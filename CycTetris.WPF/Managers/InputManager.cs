@@ -31,12 +31,14 @@ namespace CycTetris.WPF
         gm => gm.Hold()));
     }
 
-    public void HandleInput()
+    public List<BlockCommand> HandleInput()
     {
       foreach (var command in BlockCommands)
       {
-        command.IsPressed = DispatchServices.Invoke(() => Keyboard.IsKeyDown(command.Key));
+        // Need to improve efficiency!!
+        command.IsPressed = DispatchServices.Invoke(() => Keyboard.IsKeyDown(command.Key)); 
       }
+      return BlockCommands;
     }
   }
 }

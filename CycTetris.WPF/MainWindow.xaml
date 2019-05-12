@@ -12,47 +12,113 @@
         d:DataContext="{d:DesignInstance Type=local:ViewModel, IsDesignTimeCreatable=True}"
         Height="600"
         Width="400">
+  <Window.Resources>
+    <DataTemplate x:Key="BlockTemplate"
+                  DataType="{x:Type local:Block}">
+      <Viewbox Width="300"
+               Height="280"
+               Margin="0,20">
+        <Grid Background="Black"
+              Width="5"
+              Height="5">
+          <Grid.Resources>
+            <Style TargetType="Rectangle">
+              <Setter Property="Width"
+                      Value="0.9" />
+              <Setter Property="Height"
+                      Value="0.9" />
+            </Style>
+          </Grid.Resources>
+          <Rectangle Name="block0"
+                     Fill="{Binding Type, Converter={local:TypeBrushConverter}}">
+            <Rectangle.RenderTransform>
+              <TranslateTransform X="{Binding DisplayPos[0].X}"
+                                  Y="{Binding DisplayPos[0].Y}" />
+            </Rectangle.RenderTransform>
+          </Rectangle>
+          <Rectangle Name="block1"
+                     Fill="{Binding Type, Converter={local:TypeBrushConverter}}">
+            <Rectangle.RenderTransform>
+              <TranslateTransform X="{Binding DisplayPos[1].X}"
+                                  Y="{Binding DisplayPos[1].Y}" />
+            </Rectangle.RenderTransform>
+          </Rectangle>
+          <Rectangle Name="block2"
+                     Fill="{Binding Type, Converter={local:TypeBrushConverter}}">
+            <Rectangle.RenderTransform>
+              <TranslateTransform X="{Binding DisplayPos[2].X}"
+                                  Y="{Binding DisplayPos[2].Y}" />
+            </Rectangle.RenderTransform>
+          </Rectangle>
+          <Rectangle Name="block3"
+                     Fill="{Binding Type, Converter={local:TypeBrushConverter}}">
+            <Rectangle.RenderTransform>
+              <TranslateTransform X="{Binding DisplayPos[3].X}"
+                                  Y="{Binding DisplayPos[3].Y}" />
+            </Rectangle.RenderTransform>
+          </Rectangle>
+        </Grid>
+      </Viewbox>
+    </DataTemplate>
+  </Window.Resources>
   <Viewbox>
-    <Grid Width="1000"
-          Height="2000">
-      <ItemsControl ItemsSource="{Binding CellList}"
-                    Width="1000"
-                    Height="2000">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <UniformGrid Columns="10"
-                         Rows="20" />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate>
-          <DataTemplate DataType="{x:Type local:BlockType}">
-            <Rectangle Fill="{Binding Path=., Converter={local:TypeBrushConverter}}"
-                       Width="100"
-                       Height="100" />
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
-      
-      <!--GridLine-->
-      <Border>
-        <Border.Background>
-          <VisualBrush TileMode="Tile"
-                       ViewportUnits="Absolute">
-            <VisualBrush.Viewport>
-              <Rect Width="100"
-                    Height="100" />
-            </VisualBrush.Viewport>
-            <VisualBrush.Visual>
-              <Path Stroke="#99000000"
-                    StrokeThickness="2"
-                    Data="M -1,0 H 22
+    <Grid Width="2000"
+          Height="2500">
+      <ItemsControl Width="300"
+                    Height="300"
+                    HorizontalAlignment="Left"
+                    Margin="100,250,0,0"
+                    VerticalAlignment="Top"
+                    ItemsSource="{Binding BlockHold}"
+                    ItemTemplate="{StaticResource BlockTemplate}" />
+      <ItemsControl Width="300"
+                    Height="1500"
+                    HorizontalAlignment="Right"
+                    Margin="0,250,100,0"
+                    VerticalAlignment="Top"
+                    ItemsSource="{Binding BlockNexts}"
+                    ItemTemplate="{StaticResource BlockTemplate}" />
+      <Grid Width="1000"
+            Height="2000">
+        <ItemsControl ItemsSource="{Binding FieldCells}"
+                      Width="1000"
+                      Height="2000">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Columns="10"
+                           Rows="20" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type local:BlockType}">
+              <Rectangle Fill="{Binding Path=., Converter={local:TypeBrushConverter}}"
+                         Width="100"
+                         Height="100" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!--GridLine-->
+        <Border>
+          <Border.Background>
+            <VisualBrush TileMode="Tile"
+                         ViewportUnits="Absolute">
+              <VisualBrush.Viewport>
+                <Rect Width="100"
+                      Height="100" />
+              </VisualBrush.Viewport>
+              <VisualBrush.Visual>
+                <Path Stroke="#99000000"
+                      StrokeThickness="2"
+                      Data="M -1,0 H 22
                     M 0,21 H 22
                     M 0,-1 V 22
                     M 21,0 V 22" />
-            </VisualBrush.Visual>
-          </VisualBrush>
-        </Border.Background>
-      </Border>
+              </VisualBrush.Visual>
+            </VisualBrush>
+          </Border.Background>
+        </Border>
+      </Grid>
     </Grid>
   </Viewbox>
 </Window>

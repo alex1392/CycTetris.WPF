@@ -13,7 +13,9 @@ namespace CycTetris.WPF
 {
   public class ViewModel : ViewModelBase
   {
-    public BlockType[] CellList => GameManager.Field.Cells.Resize(colFirst: false);
+    public BlockType[] FieldCells => GameManager.Field.Cells.Resize(colFirst: false);
+    public Block[] BlockNexts => GameManager.BlockNexts.ToArray();
+    public Block BlockHold => GameManager.BlockHold;
 
     private readonly InputManager InputManager = new InputManager();
     private readonly StateManager StateManager = new StateManager();
@@ -44,8 +46,8 @@ namespace CycTetris.WPF
       bool HandleInput()
       {
         GameManager.RecordState();
-        InputManager.HandleInput();
-        StateManager.Handle(InputManager.BlockCommands, GameManager);
+        var commands = InputManager.HandleInput();
+        StateManager.Handle(commands, GameManager);
         return GameManager.Update();
       }
       bool Update()
@@ -56,7 +58,9 @@ namespace CycTetris.WPF
       }
       void Render()
       {
-        OnPropertyChanged(nameof(CellList));
+        OnPropertyChanged(nameof(FieldCells));
+        OnPropertyChanged(nameof(BlockNexts));
+        OnPropertyChanged(nameof(BlockHold));
       }
     }
   }

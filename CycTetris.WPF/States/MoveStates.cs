@@ -12,7 +12,7 @@ namespace CycTetris.WPF
   {
     public class NormalState : IHandleState
     {
-      public IHandleState Handle(BlockCommand command, GameManager gm)
+      public IState Handle(BlockCommand command, GameManager gm)
       {
         if (!command.IsPressed)
           return null;
@@ -37,7 +37,7 @@ namespace CycTetris.WPF
       public int Delay { get; set; } = Constants.DAS;
       public int DelayCount { get; set; } = 0;
 
-      public IHandleState Handle(BlockCommand command, GameManager gm)
+      public IState Handle(BlockCommand command, GameManager gm)
       {
         if (command.Key != PressedKey)
           return null;
@@ -59,7 +59,7 @@ namespace CycTetris.WPF
       }
 
       public int DelayCount { get; set; } = 0;
-      public IHandleState Handle(BlockCommand command, GameManager gm)
+      public IState Handle(BlockCommand command, GameManager gm)
       {
         if (command.Key != PressedKey)
           return null;

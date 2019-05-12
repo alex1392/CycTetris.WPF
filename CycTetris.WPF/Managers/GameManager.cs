@@ -11,6 +11,13 @@ namespace CycTetris.WPF
   {
     private static readonly BlockFactory blockFactory = new BlockFactory();
 
+    public void Initialize()
+    {
+      BlockNow = blockFactory.GetNextBlock();
+      BlockNexts.AddRange(blockFactory.GetNextBlocks(NextCount));
+      Field.Add(BlockNow);
+    }
+
     public Block BlockNow { get; set; }
     public Block BlockHold { get; set; }
     public Block BlockGhost { get; set; }
@@ -21,33 +28,11 @@ namespace CycTetris.WPF
     /// Can only be modified through <see cref="Update"/>
     /// </summary>
     public Field Field { get; private set; } = new Field();
+
     /// <summary>
     /// Can only be modified through <see cref="RecordState"/>
     /// </summary>
     private GameManager gmOld;
-
-    public void Initialize()
-    {
-      BlockNow = blockFactory.GetNextBlock();
-      BlockNexts.AddRange(blockFactory.GetNextBlocks(NextCount));
-      Field.Add(BlockNow);
-    }
-
-    /// <summary>
-    /// Update any change after <see cref="RecordState"/>
-    /// </summary>
-    /// <remarks>If <see cref="isDropped"/>, do not remove old block.</remarks>
-    public bool Update()
-    {
-      if (gmOld.BlockNow == BlockNow)
-        return false;
-      if (!isDropped)
-        Field.Remove(gmOld.BlockNow);
-      else
-        isDropped = false;
-      Field.Add(BlockNow);
-      return true;
-    }
     /// <summary>
     /// Clone itself to <see cref="gmOld"/>
     /// </summary>
@@ -55,6 +40,32 @@ namespace CycTetris.WPF
     {
       gmOld = Clone() as GameManager;
     }
+
+    /// <summary>
+    /// make sure <see cref="IsDropped"/> skip a whole frame of <see cref="Update"/>
+    /// </summary>
+    private bool IsSkip = false;
+    /// <summary>
+    /// Update any change after <see cref="RecordState"/>
+    /// </summary>
+    /// <remarks>If <see cref="IsDropped"/>, do not remove old block.</remarks>
+    public bool Update()
+    {
+      if (gmOld.BlockNow == BlockNow)
+        return false;
+      if (IsSkip) // 2. when the next time updated
+      {
+        IsDropped = false; // 3. reset
+        IsSkip = false;
+      }
+      if (!IsDropped)
+        Field.Remove(gmOld.BlockNow);
+      else
+        IsSkip = true; // 1. marked we skipped
+      Field.Add(BlockNow);
+      return true;
+    }
+
     public bool IsLegal(Block block)
     {
       var parPos = block.GetPartialPos();
@@ -90,37 +101,47 @@ namespace CycTetris.WPF
       }
       return (false, null);
     }
-
-    public bool IsDropped()
+    public bool IsTouchDown()
     {
-      return IsDropped(BlockNow);
+      return IsTouchDown(BlockNow);
     }
-    public bool IsDropped(Block block)
+    public bool IsTouchDown(Block block)
     {
       var blockTmp = block.Clone() as Block;
       blockTmp.Down();
       return !IsLegal(blockTmp);
     }
+
     /// <summary>
     /// Dropped flag for <see cref="Update"/>
     /// </summary>
-    private bool isDropped = false;
+    public bool IsDropped = false;
     public void Dropped()
     {
-      isDropped = true;
+      IsDropped = true;
+
       BlockNow = BlockNexts.Dequeue();
       BlockNexts.Enqueue(blockFactory.GetNextBlock());
     }
-
+    public void Hold()
+    {
+      if (BlockHold is null)
+      {
+        BlockHold = BlockNow;
+        BlockNow = BlockNexts.Dequeue();
+        BlockNexts.Enqueue(blockFactory.GetNextBlock());
+      }
+      else
+      {
+        var holdType = BlockHold.Type;
+        BlockHold = BlockNow;
+        BlockNow = new Block(holdType);
+      }
+    }
     public void HardDrop()
     {
       throw new NotImplementedException();
     }
-    public void Hold()
-    {
-      throw new NotImplementedException();
-    }
-
     public object Clone()
     {
       return new GameManager

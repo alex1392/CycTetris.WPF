@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace CycTetris.WPF
 {
-  public class EmptyState : IHandleState
+  public class EmptyState : IState
   {
-    public IHandleState Handle(BlockCommand command, GameManager gm)
-    {
-      return null;
-    }
+
   }
 }

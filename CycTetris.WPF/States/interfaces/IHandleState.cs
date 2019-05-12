@@ -8,6 +8,6 @@ namespace CycTetris.WPF
 {
   public interface IHandleState : IState
   {
-    IHandleState Handle(BlockCommand command, GameManager gm);
+    IState Handle(BlockCommand command, GameManager gm);
   }
 }

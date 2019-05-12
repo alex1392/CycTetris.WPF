@@ -25,10 +25,10 @@ namespace CycTetris.WPF
       BlockCommands.Add(new BlockCommand(BlockCommandType.RotateCCW, Key.X, 
         gm => gm.BlockNow.RotateCCW()));
 
-      BlockCommands.Add(new BlockCommand(BlockCommandType.HardDrop, Key.C,
-        gm => gm.HardDrop()));
       BlockCommands.Add(new BlockCommand(BlockCommandType.Hold, Key.Z,
         gm => gm.Hold()));
+      BlockCommands.Add(new BlockCommand(BlockCommandType.HardDrop, Key.C,
+        gm => gm.HardDrop()));
     }
 
     public List<BlockCommand> HandleInput()

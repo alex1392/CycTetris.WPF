@@ -17,7 +17,7 @@
                   DataType="{x:Type local:Block}">
       <Viewbox Width="300"
                Height="280"
-               Margin="0,20">
+               Margin="0,10">
         <Grid Background="Black"
               Width="5"
               Height="5">
@@ -64,13 +64,13 @@
   <Viewbox>
     <Grid Width="2000"
           Height="2500">
-      <ItemsControl Width="300"
+      <ContentControl Width="300"
                     Height="300"
                     HorizontalAlignment="Left"
                     Margin="100,250,0,0"
                     VerticalAlignment="Top"
-                    ItemsSource="{Binding BlockHold}"
-                    ItemTemplate="{StaticResource BlockTemplate}" />
+                    Content="{Binding BlockHold}"
+                    ContentTemplate="{StaticResource BlockTemplate}"/>
       <ItemsControl Width="300"
                     Height="1500"
                     HorizontalAlignment="Right"

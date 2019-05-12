@@ -74,6 +74,7 @@
     <Compile Include="Managers\GameManager.cs" />
     <Compile Include="States\EmptyState.cs" />
     <Compile Include="Managers\InputManager.cs" />
+    <Compile Include="States\HoldStates.cs" />
     <Compile Include="States\interfaces\IState.cs" />
     <Compile Include="States\interfaces\IUpdateState.cs" />
     <Compile Include="States\DropStates.cs" />

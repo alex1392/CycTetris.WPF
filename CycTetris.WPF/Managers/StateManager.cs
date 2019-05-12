@@ -14,6 +14,7 @@ namespace CycTetris.WPF
       new RotateStates.NormalState(),
       new DownStates.NormalState(),
       new DropStates.NormalState(),
+      new HoldStates.NormalState(),
       new EmptyState(),
     };
     public static Dictionary<BlockCommandType, int> IndexDict = new Dictionary<BlockCommandType, int>
@@ -24,8 +25,8 @@ namespace CycTetris.WPF
       { BlockCommandType.RotateCCW, 1 },
       { BlockCommandType.Down, 2 },
 
-      { BlockCommandType.HardDrop, 4 },
       { BlockCommandType.Hold, 4 },
+      { BlockCommandType.HardDrop, 5 },
     };
 
     public IHandleState MoveState
@@ -43,6 +44,12 @@ namespace CycTetris.WPF
       get => States[IndexDict[BlockCommandType.Down]] as IHandleState;
       set => States[IndexDict[BlockCommandType.Down]] = value;
     }
+    public IHandleState HoldState
+    {
+      get => States[IndexDict[BlockCommandType.Hold]] as IHandleState;
+      set => States[IndexDict[BlockCommandType.Hold]] = value;
+    }
+
     public IState DropState
     {
       get => States[3] as IState;
@@ -58,9 +65,13 @@ namespace CycTetris.WPF
     {
       foreach (var command in commands)
       {
-        var newState = (States[IndexDict[command.Type]] as IHandleState).Handle(command, gm);
+        if (!(States[IndexDict[command.Type]] is IHandleState hState))
+          continue;
+
+        var newState = hState.Handle(command, gm);
         if (newState is null)
           continue;
+
         States[IndexDict[command.Type]] = newState;
       }
     }
@@ -76,10 +87,11 @@ namespace CycTetris.WPF
         var newState = uState.Update(gm);
         if (newState is null)
           continue;
+
         States[i] = newState;
       }
     }
   }
 
-  
+
 }

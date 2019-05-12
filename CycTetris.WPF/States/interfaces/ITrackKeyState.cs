@@ -2,7 +2,7 @@
 
 namespace CycTetris.WPF
 {
-  public interface ITrackKeyState
+  public interface ITrackKeyState : IState
   {
     Key PressedKey { get; }
   }

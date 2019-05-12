@@ -25,7 +25,7 @@ namespace CycTetris.WPF
 
       public IState Update(GameManager gm)
       {
-        if (gm.IsDropped())
+        if (gm.IsTouchDown())
           return new LockDelayState();
 
         if (++DelayCount <= Delay)
@@ -44,13 +44,13 @@ namespace CycTetris.WPF
 
       public IState Update(GameManager gm)
       {
-        if (!gm.IsDropped())
+        if (!gm.IsTouchDown())
           return new NormalState(DelayCount);
 
         if (++DelayCount <= Delay)
           return null;
 
-        if (gm.IsDropped())
+        if (gm.IsTouchDown())
         {
           gm.Dropped();
           DelayCount = 0;

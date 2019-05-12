@@ -75,6 +75,8 @@
     <Compile Include="States\EmptyState.cs" />
     <Compile Include="Managers\InputManager.cs" />
     <Compile Include="States\HoldStates.cs" />
+    <Compile Include="States\interfaces\IEnterState.cs" />
+    <Compile Include="States\interfaces\ILeaveState.cs" />
     <Compile Include="States\interfaces\IState.cs" />
     <Compile Include="States\interfaces\IUpdateState.cs" />
     <Compile Include="States\DropStates.cs" />
@@ -87,7 +89,7 @@
     <Compile Include="States\MoveStates.cs" />
     <Compile Include="GameObjects\Block.cs" />
     <Compile Include="Commands\BlockCommand.cs" />
-    <Compile Include="TypeBrushConverter.cs" />
+    <Compile Include="BlockBrushConverter.cs" />
     <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

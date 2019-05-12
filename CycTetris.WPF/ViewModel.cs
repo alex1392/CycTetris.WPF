@@ -16,6 +16,7 @@ namespace CycTetris.WPF
     public BlockType[] FieldCells => GameManager.Field.Cells.Resize(colFirst: false);
     public Block[] BlockNexts => GameManager.BlockNexts.ToArray();
     public Block BlockHold => GameManager.BlockHold;
+    public Block BlockNow => GameManager.BlockNow;
 
     private readonly InputManager InputManager = new InputManager();
     private readonly StateManager StateManager = new StateManager();
@@ -28,41 +29,71 @@ namespace CycTetris.WPF
       InputManager.Initialize();
       StateManager.Initialize();
       GameManager.Initialize();
+      GameManager.TouchedDown += GameManager_Dropped;
+      GameManager.Held += GameManager_Held;
 
       GameTimer.Elapsed += GameTimer_Elapsed;
       GameTimer.Start();
     }
 
+    private bool IsFirstHeld = true;
+    private bool IsHeld = false;
+    private void GameManager_Held(object sender, EventArgs e)
+    {
+      IsHeld = true;
+    }
+
+    private bool IsDropped = false;
+    private void GameManager_Dropped(object sender, EventArgs e)
+    {
+      IsDropped = true;
+    }
+
     private void GameTimer_Elapsed(object sender, ElapsedEventArgs e)
     {
+      var gmOld = GameManager.Clone() as GameManager;
       lock (locker)
       {
-        var hasInput = HandleInput();
-        var isUpdated = Update();
-        if (hasInput || isUpdated)
-          Render();
+        HandleInput();
+        Update();
+        Render();
       }
 
-      bool HandleInput()
+      void HandleInput()
       {
-        GameManager.RecordState();
         var commands = InputManager.HandleInput();
         GameManager.HandleCommand(commands);
         StateManager.HandleCommand(commands, GameManager);
-        return GameManager.Update();
       }
-      bool Update()
+      void Update()
       {
-        GameManager.RecordState();
+        GameManager.Update();
         StateManager.Update(GameManager);
-        return GameManager.Update();
       }
       void Render()
       {
-        OnPropertyChanged(nameof(FieldCells));
-        OnPropertyChanged(nameof(BlockNexts));
-        OnPropertyChanged(nameof(BlockHold));
+        if (IsDropped || IsHeld && IsFirstHeld)
+          OnPropertyChanged(nameof(BlockNexts));
+
+        if (IsHeld)
+          OnPropertyChanged(nameof(BlockHold));
+
+        if (IsDropped)
+          OnPropertyChanged(nameof(FieldCells));
+
+        if (GameManager.BlockNow != gmOld.BlockNow)
+          OnPropertyChanged(nameof(BlockNow));
+
+        if (IsDropped)
+          IsDropped = false;
+        if (IsHeld)
+        {
+          IsHeld = false;
+          if (IsFirstHeld)
+            IsFirstHeld = false;
+        }
       }
     }
+
   }
 }

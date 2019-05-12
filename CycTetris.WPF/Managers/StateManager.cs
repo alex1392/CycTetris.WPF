@@ -35,12 +35,19 @@ namespace CycTetris.WPF
     {
       foreach (var command in commands)
       {
+        if (!IndexDict.ContainsKey(command.Type))
+          continue;
         if (!(States[IndexDict[command.Type]] is IHandleState hState))
           continue;
 
         var newState = hState.Handle(command, gm);
         if (newState is null)
           continue;
+
+        if (newState is IEnterState eState)
+          eState.Enter(gm);
+        if (States[IndexDict[command.Type]] is ILeaveState lState)
+          lState.Leave(gm);
 
         States[IndexDict[command.Type]] = newState;
       }
@@ -57,6 +64,11 @@ namespace CycTetris.WPF
         var newState = uState.Update(gm);
         if (newState is null)
           continue;
+
+        if (newState is IEnterState eState)
+          eState.Enter(gm);
+        if (States[i] is ILeaveState lState)
+          lState.Leave(gm);
 
         States[i] = newState;
       }

@@ -81,7 +81,7 @@ namespace CycTetris.WPF
         if (!gm.IsTouchDown())
           return new NormalState();
         
-        gm.Dropped();
+        gm.TouchDown();
         DelayCount = 0;
         return new NormalState();
       }

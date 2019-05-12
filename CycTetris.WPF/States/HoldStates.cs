@@ -20,14 +20,30 @@ namespace CycTetris.WPF
       }
     }
 
-    public class HeldState : IUpdateState
+    public class HeldState : IUpdateState, IEnterState, ILeaveState
     {
+      public bool IsDropped { get; set; } = false;
+      private void Gm_Dropped(object sender, EventArgs e)
+      {
+        IsDropped = true;
+      }
+
       public IState Update(GameManager gm)
       {
-        if (!gm.IsDropped)
+        if (!IsDropped)
           return null;
 
         return new NormalState();
+      }
+
+      public void Enter(GameManager gm)
+      {
+        gm.TouchedDown += Gm_Dropped;
+      }
+
+      public void Leave(GameManager gm)
+      {
+        gm.TouchedDown -= Gm_Dropped;
       }
     }
   }

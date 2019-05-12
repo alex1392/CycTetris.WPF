@@ -30,28 +30,28 @@
             </Style>
           </Grid.Resources>
           <Rectangle Name="block0"
-                     Fill="{Binding Type, Converter={local:TypeBrushConverter}}">
+                     Fill="{Binding Type, Converter={local:BlockBrushConverter}}">
             <Rectangle.RenderTransform>
               <TranslateTransform X="{Binding DisplayPos[0].X}"
                                   Y="{Binding DisplayPos[0].Y}" />
             </Rectangle.RenderTransform>
           </Rectangle>
           <Rectangle Name="block1"
-                     Fill="{Binding Type, Converter={local:TypeBrushConverter}}">
+                     Fill="{Binding Type, Converter={local:BlockBrushConverter}}">
             <Rectangle.RenderTransform>
               <TranslateTransform X="{Binding DisplayPos[1].X}"
                                   Y="{Binding DisplayPos[1].Y}" />
             </Rectangle.RenderTransform>
           </Rectangle>
           <Rectangle Name="block2"
-                     Fill="{Binding Type, Converter={local:TypeBrushConverter}}">
+                     Fill="{Binding Type, Converter={local:BlockBrushConverter}}">
             <Rectangle.RenderTransform>
               <TranslateTransform X="{Binding DisplayPos[2].X}"
                                   Y="{Binding DisplayPos[2].Y}" />
             </Rectangle.RenderTransform>
           </Rectangle>
           <Rectangle Name="block3"
-                     Fill="{Binding Type, Converter={local:TypeBrushConverter}}">
+                     Fill="{Binding Type, Converter={local:BlockBrushConverter}}">
             <Rectangle.RenderTransform>
               <TranslateTransform X="{Binding DisplayPos[3].X}"
                                   Y="{Binding DisplayPos[3].Y}" />
@@ -60,17 +60,23 @@
         </Grid>
       </Viewbox>
     </DataTemplate>
+    <DataTemplate x:Key="BlockNowTemplate"
+                  DataType="{x:Type local:Block}">
+
+    </DataTemplate>
   </Window.Resources>
   <Viewbox>
     <Grid Width="2000"
           Height="2500">
+      <!--Hold Block-->
       <ContentControl Width="300"
-                    Height="300"
-                    HorizontalAlignment="Left"
-                    Margin="100,250,0,0"
-                    VerticalAlignment="Top"
-                    Content="{Binding BlockHold}"
-                    ContentTemplate="{StaticResource BlockTemplate}"/>
+                      Height="300"
+                      HorizontalAlignment="Left"
+                      Margin="100,250,0,0"
+                      VerticalAlignment="Top"
+                      Content="{Binding BlockHold}"
+                      ContentTemplate="{StaticResource BlockTemplate}" />
+      <!--Next Blocks-->
       <ItemsControl Width="300"
                     Height="1500"
                     HorizontalAlignment="Right"
@@ -78,47 +84,82 @@
                     VerticalAlignment="Top"
                     ItemsSource="{Binding BlockNexts}"
                     ItemTemplate="{StaticResource BlockTemplate}" />
-      <Grid Width="1000"
-            Height="2000">
-        <ItemsControl ItemsSource="{Binding FieldCells}"
-                      Width="1000"
-                      Height="2000">
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <UniformGrid Columns="10"
-                           Rows="20" />
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-          <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="{x:Type local:BlockType}">
-              <Rectangle Fill="{Binding Path=., Converter={local:TypeBrushConverter}}"
-                         Width="100"
-                         Height="100" />
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
+      <!--PlayField-->
+      <Canvas Width="1000"
+              Height="2000"
+              ClipToBounds="True">
+        <Canvas.Resources>
+          <Style TargetType="Rectangle">
+            <Setter Property="Width"
+                    Value="100" />
+            <Setter Property="Height"
+                    Value="100" />
+          </Style>
+        </Canvas.Resources>
 
-        <!--GridLine-->
-        <Border>
-          <Border.Background>
-            <VisualBrush TileMode="Tile"
-                         ViewportUnits="Absolute">
-              <VisualBrush.Viewport>
-                <Rect Width="100"
-                      Height="100" />
-              </VisualBrush.Viewport>
-              <VisualBrush.Visual>
-                <Path Stroke="#99000000"
-                      StrokeThickness="2"
-                      Data="M -1,0 H 22
+        <!--BlockNow-->
+        <Rectangle Name="block0"
+                   Fill="{Binding BlockNow.Type, Converter={local:BlockBrushConverter}}"
+                   Canvas.Left="{Binding BlockNow.ParPos[0].X, Converter={cyc:MathConverter}, ConverterParameter=x*100}"
+                   Canvas.Top="{Binding BlockNow.ParPos[0].Y, Converter={cyc:MathConverter}, ConverterParameter=x*100}" />
+        <Rectangle Name="block1"
+                   Fill="{Binding BlockNow.Type, Converter={local:BlockBrushConverter}}"
+                   Canvas.Left="{Binding BlockNow.ParPos[1].X, Converter={cyc:MathConverter}, ConverterParameter=x*100}"
+                   Canvas.Top="{Binding BlockNow.ParPos[1].Y, Converter={cyc:MathConverter}, ConverterParameter=x*100}" />
+        <Rectangle Name="block2"
+                   Fill="{Binding BlockNow.Type, Converter={local:BlockBrushConverter}}"
+                   Canvas.Left="{Binding BlockNow.ParPos[2].X, Converter={cyc:MathConverter}, ConverterParameter=x*100}"
+                   Canvas.Top="{Binding BlockNow.ParPos[2].Y, Converter={cyc:MathConverter}, ConverterParameter=x*100}" />
+        <Rectangle Name="block3"
+                   Fill="{Binding BlockNow.Type, Converter={local:BlockBrushConverter}}"
+                   Canvas.Left="{Binding BlockNow.ParPos[3].X, Converter={cyc:MathConverter}, ConverterParameter=x*100}"
+                   Canvas.Top="{Binding BlockNow.ParPos[3].Y, Converter={cyc:MathConverter}, ConverterParameter=x*100}" />
+
+        <!--BlockGhost-->
+        
+        <!--Cells-->
+        <Grid>
+          <!--Dropped Blocks-->
+          <ItemsControl ItemsSource="{Binding FieldCells}"
+                        Width="1000"
+                        Height="2000">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <UniformGrid Columns="10"
+                             Rows="20" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="{x:Type local:BlockType}">
+                <Rectangle Fill="{Binding Path=., Converter={local:BlockBrushConverter}}"
+                           Width="100"
+                           Height="100" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <!--GridLine-->
+          <Border>
+            <Border.Background>
+              <VisualBrush TileMode="Tile"
+                           ViewportUnits="Absolute">
+                <VisualBrush.Viewport>
+                  <Rect Width="100"
+                        Height="100" />
+                </VisualBrush.Viewport>
+                <VisualBrush.Visual>
+                  <Path Stroke="#99000000"
+                        StrokeThickness="2"
+                        Data="M -1,0 H 22
                     M 0,21 H 22
                     M 0,-1 V 22
                     M 21,0 V 22" />
-              </VisualBrush.Visual>
-            </VisualBrush>
-          </Border.Background>
-        </Border>
-      </Grid>
+                </VisualBrush.Visual>
+              </VisualBrush>
+            </Border.Background>
+          </Border>
+        </Grid>
+      </Canvas>
     </Grid>
   </Viewbox>
 </Window>

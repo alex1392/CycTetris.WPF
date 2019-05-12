@@ -16,11 +16,19 @@ namespace CycTetris.WPF
     {
       BlockNow = blockFactory.GetNextBlock();
       BlockNexts.AddRange(blockFactory.GetNextBlocks(NextCount));
-      Field.Add(BlockNow);
     }
 
-    public Block BlockNow { get; set; }
-    public Block BlockGhost { get; private set; }
+    private Block blockNow;
+    public Block BlockNow
+    {
+      get => blockNow;
+      set
+      {
+        blockNow = value;
+        BlockGhost.Type = blockNow.Type;
+      }
+    }
+    public Block BlockGhost { get; private set; } = new Block();
     public Block BlockHold { get; private set; }
     public int NextCount { get; private set; } = 5;
     public Queue<Block> BlockNexts { get; private set; } = new Queue<Block>();
@@ -29,49 +37,9 @@ namespace CycTetris.WPF
     /// </summary>
     public Field Field { get; private set; } = new Field();
 
-    /// <summary>
-    /// Can only be modified through <see cref="RecordState"/>
-    /// </summary>
-    private GameManager gmOld;
-    /// <summary>
-    /// Clone itself to <see cref="gmOld"/>
-    /// </summary>
-    public void RecordState()
-    {
-      gmOld = Clone() as GameManager;
-    }
-
-    /// <summary>
-    /// make sure <see cref="IsDropped"/> skip a whole frame of <see cref="Update"/>
-    /// </summary>
-    private bool IsSkip = false;
-    /// <summary>
-    /// Update any change after <see cref="RecordState"/>
-    /// </summary>
-    /// <remarks>If <see cref="IsDropped"/>, do not remove old block.</remarks>
-    public bool Update()
-    {
-      if (gmOld.BlockNow == BlockNow)
-        return false;
-      if (IsSkip) // 2. when the next time updated
-      {
-        IsDropped = false; // 3. reset
-        IsSkip = false;
-      }
-      if (!IsDropped)
-        Field.Remove(gmOld.BlockNow);
-      else
-        IsSkip = true; // 1. marked we skipped
-      Field.Add(BlockNow);
-      return true;
-    }
-
     public bool IsLegal(Block block)
     {
-      var parPos = block.GetPartialPos();
-      var fieldTmp = gmOld.Field.Clone() as Field;
-      fieldTmp.Remove(gmOld.BlockNow);
-      return parPos.All(p => p.IsIn(fieldTmp, includeHH: true) && fieldTmp.IsEmpty(p));
+      return block.ParPos.All(p => p.IsIn(Field, includeHH: true) && Field.IsEmpty(p));
     }
     public (bool, Block) MoveCheck(BlockCommand command)
     {
@@ -95,7 +63,7 @@ namespace CycTetris.WPF
       for (var i = 1; i <= testN; i++)
       {
         var blockTest = blockMoved.Clone() as Block;
-        blockTest.Move(wallKickDict[(gmOld.BlockNow.Rot, blockMoved.Rot, i)]);
+        blockTest.Move(wallKickDict[(BlockNow.Rot, blockMoved.Rot, i)]);
         if (IsLegal(blockTest))
           return (true, blockTest);
       }
@@ -112,17 +80,26 @@ namespace CycTetris.WPF
       return !IsLegal(blockTmp);
     }
 
-    /// <summary>
-    /// Dropped flag for <see cref="Update"/>
-    /// </summary>
-    public bool IsDropped = false;
-    public void Dropped()
+    public event EventHandler TouchedDown;
+    protected virtual void OnTouchedDown()
     {
-      IsDropped = true;
-
+      TouchedDown?.Invoke(this, null);
+    }
+    public void TouchDown()
+    {
+      Field.Add(BlockNow);
       BlockNow = BlockNexts.Dequeue();
       BlockNexts.Enqueue(blockFactory.GetNextBlock());
+
+      OnTouchedDown();
     }
+
+    public event EventHandler Held;
+    protected virtual void OnHeld()
+    {
+      Held?.Invoke(this, null);
+    }
+
     public void Hold()
     {
       if (BlockHold is null)
@@ -137,21 +114,22 @@ namespace CycTetris.WPF
         BlockHold = BlockNow;
         BlockNow = new Block(holdType);
       }
+      OnHeld();
     }
     public void HardDrop()
     {
-      
+
     }
 
     private PointInt GetGhostPos()
     {
       var cellarray = Field.Cells;
-      var uniquePos = BlockNow.GetPartialPos().GroupBy(p => p.X, (x, p) => p).Select(g => g.FindMax(p => p.Y));
+      var uniquePos = BlockNow.ParPos.GroupBy(p => p.X, (x, p) => p).Select(g => g.FindMax(p => p.Y));
       var deltaYs = new List<int>();
       foreach (var p in uniquePos)
       {
         var cellsBelow = cellarray.GetCol(p.X).GetRange(p.Y);
-        var rowBelow = cellsBelow.FindAllIndexOf(c => c != BlockType.None).Min();
+        var rowBelow = cellsBelow.FindAllIndexOf(c => c != BlockType.None)?.Min() ?? cellsBelow.Count;
         deltaYs.Add(rowBelow - p.Y);
       }
       var deltaY = deltaYs.Min();
@@ -162,6 +140,11 @@ namespace CycTetris.WPF
     {
       var hardDropCommand = commands.Find(c => c.Type == BlockCommandType.HardDrop);
       hardDropCommand.execute(this);
+    }
+
+    public void Update()
+    {
+      //BlockGhost.Pos = GetGhostPos();
     }
 
     public object Clone()

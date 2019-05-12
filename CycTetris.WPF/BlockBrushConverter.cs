@@ -11,7 +11,7 @@ using System.Windows.Media;
 
 namespace CycTetris.WPF
 {
-  public class TypeBrushConverter : ValueConverterBase<TypeBrushConverter>
+  public class BlockBrushConverter : ValueConverterBase<BlockBrushConverter>
   {
     public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
@@ -44,6 +44,8 @@ namespace CycTetris.WPF
           color = Colors.Transparent;
           break;
       }
+      if (parameter != null)
+        color = color.SetAlpha((double)parameter);
       return new SolidColorBrush(color);
     }
 

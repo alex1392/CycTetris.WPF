@@ -30,7 +30,7 @@ namespace CycTetris.WPF
 
     public void Add(Block block)
     {
-      foreach (var p in block.GetPartialPos())
+      foreach (var p in block.ParPos)
       {
         if (!p.IsIn(this))
           continue;
@@ -39,7 +39,7 @@ namespace CycTetris.WPF
     }
     public void Remove(Block block)
     {
-      foreach (var p in block.GetPartialPos())
+      foreach (var p in block.ParPos)
       {
         if (!p.IsIn(this))
           continue;

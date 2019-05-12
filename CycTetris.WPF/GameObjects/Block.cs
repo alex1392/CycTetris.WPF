@@ -8,10 +8,11 @@ using static CycTetris.WPF.Constants;
 
 namespace CycTetris.WPF
 {
-  public class Block : ICloneable
+  public class Block : ObservableObject, ICloneable
   {
     private int _rotation = 0;
-    
+    private PointInt pos;
+
     public Block()
     {
 
@@ -21,7 +22,6 @@ namespace CycTetris.WPF
       Type = type;
       Pos = SpawnPosDict[type];
     }
-
 
     public BlockType Type { get; set; }
     public int Rot
@@ -35,22 +35,34 @@ namespace CycTetris.WPF
           _rotation = 0;
         else if (_rotation < 0)
           _rotation = 3;
+
+        UpdateParPos();
       }
     }
-    public PointInt Pos { get; set; }
+    public PointInt Pos
+    {
+      get => pos;
+      set
+      {
+        pos = value;
+        UpdateParPos();
+      }
+    }
+    public PointInt[] ParPos { get; private set; }
+    public void UpdateParPos()
+    {
+      ParPos = ParPosDict[(Type, Rot)].Select(p => p + pos).ToArray();
+    }
+
     /// <summary>
     /// For displaying hold block and next blocks
     /// </summary>
     public List<Point> DisplayPos => ParPosDict[(Type, 0)].ToList();
-    public IEnumerable<PointInt> GetPartialPos()
-    {
-      return ParPosDict[(Type, Rot)].Select(p => p + Pos);
-    }
 
     public void Move(PointInt point) => Pos += point;
-    public void Left() => Pos.X--;
-    public void Right() => Pos.X++;
-    public void Down() => Pos.Y++;
+    public void Left() => Pos -= (1, 0);
+    public void Right() => Pos += (1, 0);
+    public void Down() => Pos += (0, 1);
     public void RotateCW() => Rot++;
     public void RotateCCW() => Rot--;
 

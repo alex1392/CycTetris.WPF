@@ -11,21 +11,14 @@ namespace CycTetris.WPF
     public List<IState> States = new List<IState>
     {
       new MoveStates.NormalState(),
-      new RotateStates.NormalState(),
       new DownStates.NormalState(),
       new FallStates.NormalState(),
-      new HoldStates.NormalState(),
-      new HardDropStates.NormalState(),
     };
-    public static Dictionary<BlockCommandType, int> IndexDict = new Dictionary<BlockCommandType, int>
+    public static Dictionary<StateCommandType, int> IndexDict = new Dictionary<StateCommandType, int>
     {
-      { BlockCommandType.Left, 0 },
-      { BlockCommandType.Right, 0 },
-      { BlockCommandType.RotateCW, 1 },
-      { BlockCommandType.RotateCCW, 1 },
-      { BlockCommandType.Down, 2 },
-      { BlockCommandType.Hold, 4 },
-      { BlockCommandType.HardDrop, 5 },
+      { StateCommandType.Left, 0 },
+      { StateCommandType.Right, 0 },
+      { StateCommandType.Down, 1 },
     };
 
     public void Initialize()
@@ -33,7 +26,7 @@ namespace CycTetris.WPF
 
     }
 
-    public void HandleCommand(List<BlockCommand> commands, GameManager gm)
+    public void HandleCommand(List<StateCommand> commands, GameManager gm)
     {
       foreach (var command in commands)
       {

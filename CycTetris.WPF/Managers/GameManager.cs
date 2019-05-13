@@ -26,23 +26,20 @@ namespace CycTetris.WPF
       set
       {
         blockNow = value;
-        BlockGhost.Type = blockNow.Type;
+        UpdateGhostBlock();
       }
     }
     public Block BlockGhost { get; private set; } = new Block();
     public Block BlockHold { get; private set; }
     public int NextCount { get; private set; } = 5;
     public Queue<Block> BlockNexts { get; private set; } = new Queue<Block>();
-    /// <summary>
-    /// Can only be modified through <see cref="Update()"/>
-    /// </summary>
     public Field Field { get; private set; } = new Field();
 
     public bool IsLegal(Block block)
     {
       return block.ParPos.All(p => p.IsIn(Field, includeHH: true) && Field.IsEmpty(p));
     }
-    public (bool, Block) MoveCheck(BlockCommand command)
+    public (bool, Block) MoveCheck(PlayerCommand command)
     {
       return MoveCheck(command.execute);
     }
@@ -53,7 +50,7 @@ namespace CycTetris.WPF
 
       return (IsLegal(gmMoved.BlockNow), gmMoved.BlockNow);
     }
-    public (bool, Block) KickCheck(BlockCommand command)
+    public (bool, Block) KickCheck(PlayerCommand command)
     {
       var gmMoved = Clone() as GameManager;
       command.Execute(gmMoved);
@@ -91,14 +88,9 @@ namespace CycTetris.WPF
       Field.Add(BlockNow);
       BlockNow = BlockNexts.Dequeue();
       BlockNexts.Enqueue(blockFactory.GetNextBlock());
+      IsHeld = false; 
 
       OnTouchedDown();
-    }
-
-    public event EventHandler Held;
-    protected virtual void OnHeld()
-    {
-      Held?.Invoke(this, null);
     }
 
     private PointInt GetGhostPos()
@@ -123,6 +115,7 @@ namespace CycTetris.WPF
       var deltaY = deltaYs.Min();
       return BlockNow.Pos + (0, deltaY - 1);
     }
+    private bool IsHeld = false;  
     public void Hold()
     {
       if (BlockHold is null)
@@ -137,18 +130,12 @@ namespace CycTetris.WPF
         BlockHold = BlockNow;
         BlockNow = new Block(holdType);
       }
-      OnHeld();
+      IsHeld = true;
     }
     public void HardDrop()
     {
       BlockNow.Pos = GetGhostPos();
       TouchDown();
-    }
-
-    public event EventHandler Resetted;
-    protected virtual void OnResetted()
-    {
-      Resetted?.Invoke(this, null);
     }
 
     public void Reset()
@@ -157,23 +144,66 @@ namespace CycTetris.WPF
       BlockHold = null;
       BlockNow = BlockNexts.Dequeue();
       BlockNexts.Enqueue(blockFactory.GetNextBlock());
-
-      OnResetted();
     }
 
-    public void HandleCommand(List<BlockCommand> commands)
+    public void HandleStateCommand(List<StateCommand> commands)
     {
-      var resetCommand = commands.Find(c => c.Type == BlockCommandType.Reset);
-      if (resetCommand.IsPressed)
-        resetCommand.execute(this);
+
+    }
+    public bool HandlePressCommand(PressCommand command)
+    {
+      var isUpdate = false;
+      if (command == null || !command.IsPressed || command.IsHandled)
+        return isUpdate;
+      switch (command.Type)
+      {
+        case PressCommandType.RotateCW:
+        case PressCommandType.RotateCCW:
+          var funcs = new List<Func<PlayerCommand, (bool, Block)>>
+          {
+            MoveCheck, KickCheck
+          };
+          foreach (var func in funcs)
+          {
+            var (canExecute, blockExecuted) = func(command);
+            if (canExecute)
+            {
+              BlockNow = blockExecuted;
+              UpdateGhostBlock();
+              isUpdate = true;
+              break;
+            }
+          }
+          break;
+        case PressCommandType.HardDrop:
+          HardDrop();
+          isUpdate = true;
+          break;
+        case PressCommandType.Reset:
+          Reset();
+          isUpdate = true;
+          break;
+        case PressCommandType.Hold:
+          if (!IsHeld)
+            Hold();
+          isUpdate = true;
+          break;
+      }
+      command.IsHandled = true;
+      return isUpdate;
     }
 
-    public void Update()
+    public void UpdateGhostBlock()
     {
+      BlockGhost.Type = blockNow.Type;
       BlockGhost.Pos = GetGhostPos();
       BlockGhost.Rot = BlockNow.Rot;
     }
-
+    public void Update()
+    {
+      UpdateGhostBlock();
+    }
+    
     public object Clone()
     {
       return new GameManager

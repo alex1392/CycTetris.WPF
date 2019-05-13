@@ -6,15 +6,12 @@ using System.Threading.Tasks;
 
 namespace CycTetris.WPF
 {
-  public enum BlockCommandType
+  public enum PressCommandType
   {
-    Left,
-    Right,
-    Down,
     RotateCW,
     RotateCCW,
     HardDrop,
-    Hold,
     Reset,
+    Hold,
   }
 }

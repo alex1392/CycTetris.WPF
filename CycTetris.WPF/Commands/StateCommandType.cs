@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace CycTetris.WPF
 {
-  public interface IHandleState : IState
+  public enum StateCommandType
   {
-    IState Handle(StateCommand command, GameManager gm);
+    Left,
+    Right,
+    Down,
+    Hold, //need to remove
   }
 }

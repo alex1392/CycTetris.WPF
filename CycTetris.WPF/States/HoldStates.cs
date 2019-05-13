@@ -10,7 +10,7 @@ namespace CycTetris.WPF
   {
     public class NormalState : IHandleState
     {
-      public IState Handle(BlockCommand command, GameManager gm)
+      public IState Handle(StateCommand command, GameManager gm)
       {
         if (!command.IsPressed)
           return null;

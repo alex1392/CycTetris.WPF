@@ -65,16 +65,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Commands\IBlockCommand.cs" />
-    <Compile Include="Commands\BlockCommandType.cs" />
+    <Compile Include="Commands\PlayerCommand.cs" />
+    <Compile Include="Commands\PressCommandType.cs" />
+    <Compile Include="Commands\StateCommandType.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="GameObjects\BlockFactory.cs" />
     <Compile Include="GameObjects\BlockType.cs" />
     <Compile Include="GameObjects\Field.cs" />
     <Compile Include="Managers\GameManager.cs" />
+    <Compile Include="Commands\PressCommand.cs" />
     <Compile Include="States\EmptyState.cs" />
     <Compile Include="Managers\InputManager.cs" />
-    <Compile Include="States\HardDropStates.cs" />
     <Compile Include="States\HoldStates.cs" />
     <Compile Include="States\interfaces\IEnterState.cs" />
     <Compile Include="States\interfaces\ILeaveState.cs" />
@@ -84,12 +85,11 @@
     <Compile Include="Managers\StateManager.cs" />
     <Compile Include="States\DownStates.cs" />
     <Compile Include="States\interfaces\ITrackKeyState.cs" />
-    <Compile Include="States\RotateStates.cs" />
     <Compile Include="States\interfaces\IDelayState.cs" />
     <Compile Include="States\interfaces\IHandleState.cs" />
     <Compile Include="States\MoveStates.cs" />
     <Compile Include="GameObjects\Block.cs" />
-    <Compile Include="Commands\BlockCommand.cs" />
+    <Compile Include="Commands\StateCommand.cs" />
     <Compile Include="BlockBrushConverter.cs" />
     <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">

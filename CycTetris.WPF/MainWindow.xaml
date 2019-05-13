@@ -12,6 +12,16 @@
         d:DataContext="{d:DesignInstance Type=local:ViewModel, IsDesignTimeCreatable=True}"
         Height="600"
         Width="400">
+  <i:Interaction.Triggers>
+    <i:EventTrigger EventName="KeyUp">
+      <cyc:EventToCommand Command="{Binding KeyUpCommand}"
+                          PassEventArgsToCommand="True"/>
+    </i:EventTrigger>
+    <i:EventTrigger EventName="KeyDown">
+      <cyc:EventToCommand Command="{Binding KeyDownCommand}"
+                          PassEventArgsToCommand="True" />
+    </i:EventTrigger>
+  </i:Interaction.Triggers>
   <Window.Resources>
     <DataTemplate x:Key="BlockTemplate"
                   DataType="{x:Type local:Block}">

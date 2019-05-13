@@ -18,6 +18,14 @@ namespace CycTetris.WPF
     public Block BlockHold => GameManager.BlockHold;
     public Block BlockNow => GameManager.BlockNow;
     public Block BlockGhost => GameManager.BlockGhost;
+    public void RenderAll()
+    {
+      OnPropertyChanged(nameof(BlockNexts));
+      OnPropertyChanged(nameof(BlockHold));
+      OnPropertyChanged(nameof(FieldCells));
+      OnPropertyChanged(nameof(BlockNow));
+      OnPropertyChanged(nameof(BlockGhost));
+    }
 
     private readonly InputManager InputManager = new InputManager();
     private readonly StateManager StateManager = new StateManager();
@@ -30,31 +38,63 @@ namespace CycTetris.WPF
       InputManager.Initialize();
       StateManager.Initialize();
       GameManager.Initialize();
-      GameManager.TouchedDown += GameManager_Dropped;
-      GameManager.Held += GameManager_Held;
-      GameManager.Resetted += GameManager_Resetted;
+      GameManager.TouchedDown += GameManager_TouchedDown;
+
+      KeyUpCommand = new RelayCommand<KeyEventArgs>(KeyUp);
+      KeyDownCommand = new RelayCommand<KeyEventArgs>(KeyDown);
 
       GameTimer.Elapsed += GameTimer_Elapsed;
       GameTimer.Start();
     }
 
     private bool IsFirstHeld = true;
-    private bool IsHeld = false;
-    private void GameManager_Held(object sender, EventArgs e)
+
+    private bool IsTouchedDown = false;
+    private void GameManager_TouchedDown(object sender, EventArgs e)
     {
-      IsHeld = true;
+      IsTouchedDown = true;
     }
 
-    private bool IsDropped = false;
-    private void GameManager_Dropped(object sender, EventArgs e)
+    public ICommand KeyDownCommand { get; private set; }
+    /// <summary>
+    /// Handle single-press commands
+    /// </summary>
+    private void KeyDown(KeyEventArgs e)
     {
-      IsDropped = true;
+      var command = InputManager.HandleKeyDown(e);
+      var isRender = GameManager.HandlePressCommand(command);
+      if (isRender)
+      {
+        switch (command.Type)
+        {
+          case PressCommandType.RotateCW:
+          case PressCommandType.RotateCCW:
+            OnPropertyChanged(nameof(BlockNow));
+            OnPropertyChanged(nameof(BlockGhost));
+            break;
+          case PressCommandType.HardDrop:
+            RenderAll();
+            break;
+          case PressCommandType.Reset:
+            RenderAll();
+            break;
+          case PressCommandType.Hold:
+            if (IsFirstHeld)
+            {
+              OnPropertyChanged(nameof(BlockNexts));
+              IsFirstHeld = false;  
+            }
+            OnPropertyChanged(nameof(BlockHold));
+            OnPropertyChanged(nameof(BlockNow));
+            OnPropertyChanged(nameof(BlockGhost));
+            break;
+        }
+      }
     }
-
-    private bool IsResetted = false;
-    private void GameManager_Resetted(object sender, EventArgs e)
+    public ICommand KeyUpCommand { get; private set; }
+    private void KeyUp(KeyEventArgs e)
     {
-      IsResetted = true;
+      InputManager.HandleKeyUp(e);
     }
 
     private void GameTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -69,8 +109,8 @@ namespace CycTetris.WPF
 
       void HandleInput()
       {
-        var commands = InputManager.HandleInput();
-        GameManager.HandleCommand(commands);
+        var commands = InputManager.HandleStateCommand();
+        GameManager.HandleStateCommand(commands);
         StateManager.HandleCommand(commands, GameManager);
       }
       void Update()
@@ -80,33 +120,19 @@ namespace CycTetris.WPF
       }
       void Render()
       {
-        if (IsDropped || IsResetted || IsHeld && IsFirstHeld)
+        if (IsTouchedDown)
+        {
           OnPropertyChanged(nameof(BlockNexts));
-
-        if (IsHeld || IsResetted)
-          OnPropertyChanged(nameof(BlockHold));
-
-        if (IsDropped || IsResetted)
           OnPropertyChanged(nameof(FieldCells));
+          IsTouchedDown = false;
+        }
 
-        if (GameManager.BlockNow != gmOld.BlockNow || IsResetted)
+        if (GameManager.BlockNow != gmOld.BlockNow)
         {
           OnPropertyChanged(nameof(BlockNow));
           OnPropertyChanged(nameof(BlockGhost));
         }
-
-        if (IsDropped)
-          IsDropped = false;
-        if (IsResetted)
-          IsResetted = false;
-        if (IsHeld)
-        {
-          IsHeld = false;
-          if (IsFirstHeld)
-            IsFirstHeld = false;
-        }
       }
     }
-
   }
 }

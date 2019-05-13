@@ -1,10 +1,8 @@
 ﻿using CycWpfLibrary;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using static CycTetris.WPF.Constants;
-using static CycWpfLibrary.Math;
 
 namespace CycTetris.WPF
 {
@@ -18,21 +16,22 @@ namespace CycTetris.WPF
       BlockNexts.AddRange(blockFactory.GetNextBlocks(NextCount));
       Update();
     }
-
-    private Block blockNow;
+    
+    private Block _blockNow;
     public Block BlockNow
     {
-      get => blockNow;
+      get => _blockNow;
       set
       {
-        blockNow = value;
+        _blockNow = value;
         UpdateGhostBlock();
       }
     }
     public Block BlockGhost { get; private set; } = new Block();
     public Block BlockHold { get; private set; }
-    public int NextCount { get; private set; } = 5;
-    public Queue<Block> BlockNexts { get; private set; } = new Queue<Block>();
+    public int NextCount { get; } = 5;
+    // ReSharper disable once IdentifierTypo
+    public Queue<Block> BlockNexts { get; } = new Queue<Block>();
     public Field Field { get; private set; } = new Field();
 
     public bool IsLegal(Block block)
@@ -45,22 +44,23 @@ namespace CycTetris.WPF
     }
     public (bool, Block) MoveCheck(Action<GameManager> action)
     {
-      var gmMoved = Clone() as GameManager;
+      var gmMoved = (GameManager) Clone();
       action.Invoke(gmMoved);
 
       return (IsLegal(gmMoved.BlockNow), gmMoved.BlockNow);
     }
     public (bool, Block) KickCheck(PlayerCommand command)
     {
-      var gmMoved = Clone() as GameManager;
+      var gmMoved = (GameManager) Clone();
       command.Execute(gmMoved);
 
       var blockMoved = gmMoved.BlockNow;
       var wallKickDict = blockMoved.Type == BlockType.I ?
         IWallKickDict : WallKickDict;
-      for (var i = 1; i <= testN; i++)
+      
+      for (var i = 1; i <= TEST_N; i++)
       {
-        var blockTest = blockMoved.Clone() as Block;
+        var blockTest = (Block) blockMoved.Clone();
         blockTest.Move(wallKickDict[(BlockNow.Rot, blockMoved.Rot, i)]);
         if (IsLegal(blockTest))
           return (true, blockTest);
@@ -73,7 +73,7 @@ namespace CycTetris.WPF
     }
     public bool IsTouchDown(Block block)
     {
-      var blockTmp = block.Clone() as Block;
+      var blockTmp = (Block) block.Clone();
       blockTmp.Down();
       return !IsLegal(blockTmp);
     }
@@ -88,34 +88,28 @@ namespace CycTetris.WPF
       Field.Add(BlockNow);
       BlockNow = BlockNexts.Dequeue();
       BlockNexts.Enqueue(blockFactory.GetNextBlock());
-      IsHeld = false; 
+      _isHeld = false; 
 
       OnTouchedDown();
     }
-
+    
     private PointInt GetGhostPos()
     {
-      var cellarray = Field.Cells;
+      var cellArray = Field.Cells;
       var uniquePos = BlockNow.ParPos
         .Where(p => p.Y >= 0)
         .GroupBy(p => p.X, (x, p) => p)
         .Select(g => g.FindMax(p => p.Y));
-      var deltaYs = new List<int>();
-      foreach (var p in uniquePos)
-      {
-        var cellsBelow = cellarray.GetRow(p.X).GetRange(p.Y);
-        var blockBelowIdx = cellsBelow.FindAllIndexOf(c => c != BlockType.None);
-        int rowBelow;
-        if (blockBelowIdx.Count() > 0)
-          rowBelow = blockBelowIdx.Min();
-        else
-          rowBelow = cellsBelow.Count;
-        deltaYs.Add(rowBelow);
-      }
+
+      var deltaYs = from p in uniquePos
+        let cellsBelow = cellArray.GetRow(p.X).GetRange(p.Y)
+        let blockBelowIdx = cellsBelow.FindAllIndexOf(c => c != BlockType.None)
+        select blockBelowIdx.Any() ? blockBelowIdx.Min() : cellsBelow.Count;
       var deltaY = deltaYs.Min();
       return BlockNow.Pos + (0, deltaY - 1);
     }
-    private bool IsHeld = false;  
+    private bool _isHeld;
+
     public void Hold()
     {
       if (BlockHold is null)
@@ -130,7 +124,7 @@ namespace CycTetris.WPF
         BlockHold = BlockNow;
         BlockNow = new Block(holdType);
       }
-      IsHeld = true;
+      _isHeld = true;
     }
     public void HardDrop()
     {
@@ -152,13 +146,13 @@ namespace CycTetris.WPF
     }
     public bool HandlePressCommand(PressCommand command)
     {
-      var isUpdate = false;
       if (command == null || !command.IsPressed || command.IsHandled)
-        return isUpdate;
+        return false;
+      var isUpdate = false;
       switch (command.Type)
       {
-        case PressCommandType.RotateCW:
-        case PressCommandType.RotateCCW:
+        case PressCommandType.RotateCw:
+        case PressCommandType.RotateCcw:
           var funcs = new List<Func<PlayerCommand, (bool, Block)>>
           {
             MoveCheck, KickCheck
@@ -166,13 +160,12 @@ namespace CycTetris.WPF
           foreach (var func in funcs)
           {
             var (canExecute, blockExecuted) = func(command);
-            if (canExecute)
-            {
-              BlockNow = blockExecuted;
-              UpdateGhostBlock();
-              isUpdate = true;
-              break;
-            }
+            if (!canExecute)
+              continue;
+            BlockNow = blockExecuted;
+            UpdateGhostBlock();
+            isUpdate = true;
+            break;
           }
           break;
         case PressCommandType.HardDrop:
@@ -184,7 +177,7 @@ namespace CycTetris.WPF
           isUpdate = true;
           break;
         case PressCommandType.Hold:
-          if (!IsHeld)
+          if (!_isHeld)
             Hold();
           isUpdate = true;
           break;
@@ -195,9 +188,11 @@ namespace CycTetris.WPF
 
     public void UpdateGhostBlock()
     {
-      BlockGhost.Type = blockNow.Type;
-      BlockGhost.Pos = GetGhostPos();
-      BlockGhost.Rot = BlockNow.Rot;
+      BlockGhost = new Block(_blockNow.Type)
+      {
+        Pos = GetGhostPos(),
+        Rot = BlockNow.Rot,
+      };
     }
     public void Update()
     {

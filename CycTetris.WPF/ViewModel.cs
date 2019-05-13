@@ -1,23 +1,19 @@
-﻿using CycWpfLibrary;
-using CycWpfLibrary.Threading;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System;
 using System.Timers;
-using System.Windows;
 using System.Windows.Input;
+using CycWpfLibrary;
 using static CycTetris.WPF.Constants;
 
 namespace CycTetris.WPF
 {
   public class ViewModel : ViewModelBase
   {
-    public BlockType[] FieldCells => GameManager.Field.Cells.Resize(colFirst: false);
-    public Block[] BlockNexts => GameManager.BlockNexts.ToArray();
-    public Block BlockHold => GameManager.BlockHold;
-    public Block BlockNow => GameManager.BlockNow;
-    public Block BlockGhost => GameManager.BlockGhost;
+    public BlockType[] FieldCells => _gameManager.Field.Cells.Resize(colFirst: false);
+    // ReSharper disable once IdentifierTypo
+    public Block[] BlockNexts => _gameManager.BlockNexts.ToArray();
+    public Block BlockHold => _gameManager.BlockHold;
+    public Block BlockNow => _gameManager.BlockNow;
+    public Block BlockGhost => _gameManager.BlockGhost;
     public void RenderAll()
     {
       OnPropertyChanged(nameof(BlockNexts));
@@ -27,111 +23,112 @@ namespace CycTetris.WPF
       OnPropertyChanged(nameof(BlockGhost));
     }
 
-    private readonly InputManager InputManager = new InputManager();
-    private readonly StateManager StateManager = new StateManager();
-    private readonly GameManager GameManager = new GameManager();
-    private readonly Timer GameTimer = new Timer(1000d / FPS);
+    public ICommand KeyDownCommand { get; }
+    public ICommand KeyUpCommand { get; }
+
+    private readonly InputManager _inputManager = new InputManager();
+    private readonly StateManager _stateManager = new StateManager();
+    private readonly GameManager _gameManager = new GameManager();
+    private readonly Timer _gameTimer = new Timer(1000d / FPS);
     private static readonly object locker = new object();
 
     public ViewModel()
     {
-      InputManager.Initialize();
-      StateManager.Initialize();
-      GameManager.Initialize();
-      GameManager.TouchedDown += GameManager_TouchedDown;
+      _inputManager.Initialize();
+      _stateManager.Initialize();
+      _gameManager.Initialize();
+      _gameManager.TouchedDown += GameManager_TouchedDown;
 
       KeyUpCommand = new RelayCommand<KeyEventArgs>(KeyUp);
       KeyDownCommand = new RelayCommand<KeyEventArgs>(KeyDown);
 
-      GameTimer.Elapsed += GameTimer_Elapsed;
-      GameTimer.Start();
+      _gameTimer.Elapsed += GameTimer_Elapsed;
+      _gameTimer.Start();
     }
 
-    private bool IsFirstHeld = true;
-
-    private bool IsTouchedDown = false;
+    private bool _isTouchedDown;
     private void GameManager_TouchedDown(object sender, EventArgs e)
     {
-      IsTouchedDown = true;
+      _isTouchedDown = true;
     }
 
-    public ICommand KeyDownCommand { get; private set; }
+    private bool _isFirstHeld = true;
     /// <summary>
     /// Handle single-press commands
     /// </summary>
     private void KeyDown(KeyEventArgs e)
     {
-      var command = InputManager.HandleKeyDown(e);
-      var isRender = GameManager.HandlePressCommand(command);
+      var command = _inputManager.HandleKeyDown(e);
+      var isRender = _gameManager.HandlePressCommand(command);
       if (isRender)
+        PressRender(command);
+    }
+    private void PressRender(PressCommand command)
+    {
+      switch (command.Type)
       {
-        switch (command.Type)
-        {
-          case PressCommandType.RotateCW:
-          case PressCommandType.RotateCCW:
-            OnPropertyChanged(nameof(BlockNow));
-            OnPropertyChanged(nameof(BlockGhost));
-            break;
-          case PressCommandType.HardDrop:
-            RenderAll();
-            break;
-          case PressCommandType.Reset:
-            RenderAll();
-            break;
-          case PressCommandType.Hold:
-            if (IsFirstHeld)
-            {
-              OnPropertyChanged(nameof(BlockNexts));
-              IsFirstHeld = false;  
-            }
-            OnPropertyChanged(nameof(BlockHold));
-            OnPropertyChanged(nameof(BlockNow));
-            OnPropertyChanged(nameof(BlockGhost));
-            break;
-        }
+        case PressCommandType.RotateCw:
+        case PressCommandType.RotateCcw:
+          OnPropertyChanged(nameof(BlockNow));
+          OnPropertyChanged(nameof(BlockGhost));
+          break;
+        case PressCommandType.HardDrop:
+          RenderAll();
+          break;
+        case PressCommandType.Reset:
+          RenderAll();
+          break;
+        case PressCommandType.Hold:
+          if (_isFirstHeld)
+          {
+            OnPropertyChanged(nameof(BlockNexts));
+            _isFirstHeld = false;
+          }
+          OnPropertyChanged(nameof(BlockHold));
+          OnPropertyChanged(nameof(BlockNow));
+          OnPropertyChanged(nameof(BlockGhost));
+          break;
       }
     }
-    public ICommand KeyUpCommand { get; private set; }
     private void KeyUp(KeyEventArgs e)
     {
-      InputManager.HandleKeyUp(e);
+      _inputManager.HandleKeyUp(e);
     }
 
     private void GameTimer_Elapsed(object sender, ElapsedEventArgs e)
     {
-      var gmOld = GameManager.Clone() as GameManager;
+      var gmOld = _gameManager.Clone() as GameManager;
       lock (locker)
       {
-        HandleInput();
-        Update();
-        Render();
+        HandleStateCommand();
+        StateUpdate();
+        StateRender(gmOld);
+      }  
+    }
+    private void HandleStateCommand()
+    {
+      var commands = _inputManager.HandleStateCommand();
+      _gameManager.HandleStateCommand(commands);
+      _stateManager.HandleStateCommand(commands, _gameManager);
+    }
+    private void StateUpdate()
+    {
+      _gameManager.Update();
+      _stateManager.Update(_gameManager);
+    }
+    private void StateRender(GameManager gmOld)
+    {
+      if (_isTouchedDown)
+      {
+        OnPropertyChanged(nameof(BlockNexts));
+        OnPropertyChanged(nameof(FieldCells));
+        _isTouchedDown = false;
       }
 
-      void HandleInput()
+      if (_gameManager.BlockNow != gmOld.BlockNow)
       {
-        var commands = InputManager.HandleStateCommand();
-        GameManager.HandleStateCommand(commands);
-        StateManager.HandleCommand(commands, GameManager);
-      }
-      void Update()
-      {
-        GameManager.Update();
-        StateManager.Update(GameManager);
-      }
-      void Render()
-      {
-        if (IsTouchedDown)
-        {
-          OnPropertyChanged(nameof(BlockNexts));
-          OnPropertyChanged(nameof(FieldCells));
-          IsTouchedDown = false;
-        }
-
-        if (GameManager.BlockNow != gmOld.BlockNow)
-        {
-          OnPropertyChanged(nameof(BlockNow));
-          OnPropertyChanged(nameof(BlockGhost));
-        }
+        OnPropertyChanged(nameof(BlockNow));
+        OnPropertyChanged(nameof(BlockGhost));
       }
     }
   }

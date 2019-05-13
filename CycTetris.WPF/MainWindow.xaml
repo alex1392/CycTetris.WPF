@@ -108,37 +108,37 @@
         </Canvas.Resources>
 
         <!--BlockNow-->
-        <Rectangle Name="block0"
+        <Rectangle Name="Block0"
                    Fill="{Binding  BlockNow.Type, Converter={local:BlockBrushConverter}}"
                    Canvas.Left="{Binding BlockNow.ParPos[0].X, Converter={cyc:MathConverter}, ConverterParameter=x*100}"
                    Canvas.Top="{Binding BlockNow.ParPos[0].Y, Converter={cyc:MathConverter}, ConverterParameter=x*100}" />
-        <Rectangle Name="block1"
+        <Rectangle Name="Block1"
                    Fill="{Binding BlockNow.Type, Converter={local:BlockBrushConverter}}"
                    Canvas.Left="{Binding BlockNow.ParPos[1].X, Converter={cyc:MathConverter}, ConverterParameter=x*100}"
                    Canvas.Top="{Binding BlockNow.ParPos[1].Y, Converter={cyc:MathConverter}, ConverterParameter=x*100}" />
-        <Rectangle Name="block2"
+        <Rectangle Name="Block2"
                    Fill="{Binding BlockNow.Type, Converter={local:BlockBrushConverter}}"
                    Canvas.Left="{Binding BlockNow.ParPos[2].X, Converter={cyc:MathConverter}, ConverterParameter=x*100}"
                    Canvas.Top="{Binding BlockNow.ParPos[2].Y, Converter={cyc:MathConverter}, ConverterParameter=x*100}" />
-        <Rectangle Name="block3"
+        <Rectangle Name="Block3"
                    Fill="{Binding BlockNow.Type, Converter={local:BlockBrushConverter}}"
                    Canvas.Left="{Binding BlockNow.ParPos[3].X, Converter={cyc:MathConverter}, ConverterParameter=x*100}"
                    Canvas.Top="{Binding BlockNow.ParPos[3].Y, Converter={cyc:MathConverter}, ConverterParameter=x*100}" />
 
         <!--BlockGhost-->
-        <Rectangle Name="gblock0"
+        <Rectangle Name="Gblock0"
                    Fill="{Binding BlockGhost.Type, Converter={local:BlockBrushConverter}, ConverterParameter=0.3}"
                    Canvas.Left="{Binding BlockGhost.ParPos[0].X, Converter={cyc:MathConverter}, ConverterParameter=x*100}"
                    Canvas.Top="{Binding BlockGhost.ParPos[0].Y, Converter={cyc:MathConverter}, ConverterParameter=x*100}" />
-        <Rectangle Name="gblock1"
+        <Rectangle Name="Gblock1"
                    Fill="{Binding BlockGhost.Type, Converter={local:BlockBrushConverter}, ConverterParameter=0.3}"
                    Canvas.Left="{Binding BlockGhost.ParPos[1].X, Converter={cyc:MathConverter}, ConverterParameter=x*100}"
                    Canvas.Top="{Binding BlockGhost.ParPos[1].Y, Converter={cyc:MathConverter}, ConverterParameter=x*100}" />
-        <Rectangle Name="gblock2"
+        <Rectangle Name="Gblock2"
                    Fill="{Binding BlockGhost.Type, Converter={local:BlockBrushConverter}, ConverterParameter=0.3}"
                    Canvas.Left="{Binding BlockGhost.ParPos[2].X, Converter={cyc:MathConverter}, ConverterParameter=x*100}"
                    Canvas.Top="{Binding BlockGhost.ParPos[2].Y, Converter={cyc:MathConverter}, ConverterParameter=x*100}" />
-        <Rectangle Name="gblock3"
+        <Rectangle Name="Gblock3"
                    Fill="{Binding BlockGhost.Type, Converter={local:BlockBrushConverter}, ConverterParameter=0.3}"
                    Canvas.Left="{Binding BlockGhost.ParPos[3].X, Converter={cyc:MathConverter}, ConverterParameter=x*100}"
                    Canvas.Top="{Binding BlockGhost.ParPos[3].Y, Converter={cyc:MathConverter}, ConverterParameter=x*100}" />

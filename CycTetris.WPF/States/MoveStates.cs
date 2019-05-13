@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace CycTetris.WPF
 {
@@ -27,7 +21,7 @@ namespace CycTetris.WPF
 
     public class DasState : IHandleState, IDelayState, ITrackKeyState
     {
-      public Key PressedKey { get; private set; }
+      public Key PressedKey { get; }
 
       public DasState(Key key)
       {
@@ -35,7 +29,7 @@ namespace CycTetris.WPF
       }
 
       public int Delay { get; set; } = Constants.DAS;
-      public int DelayCount { get; set; } = 0;
+      public int DelayCount { get; set; }
 
       public IState Handle(StateCommand command, GameManager gm)
       {
@@ -51,14 +45,14 @@ namespace CycTetris.WPF
 
     public class AutoShiftState : IHandleState, IDelayState, ITrackKeyState
     {
-      public Key PressedKey { get; private set; }
+      public Key PressedKey { get; }
       public int Delay { get; set; } = Constants.ASD;
       public AutoShiftState(Key key)
       {
         PressedKey = key;
       }
 
-      public int DelayCount { get; set; } = 0;
+      public int DelayCount { get; set; }
       public IState Handle(StateCommand command, GameManager gm)
       {
         if (command.Key != PressedKey)

@@ -1,9 +1,5 @@
 ﻿using CycWpfLibrary.Threading;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace CycTetris.WPF
@@ -25,8 +21,8 @@ namespace CycTetris.WPF
       PressCommands.Add(new PressCommand(PressCommandType.Hold, Key.Z, gm => gm.Hold()));
 
       PressCommands.Add(new PressCommand(PressCommandType.HardDrop, Key.C, gm => gm.HardDrop()));
-      PressCommands.Add(new PressCommand(PressCommandType.RotateCW, Key.Up, gm => gm.BlockNow.RotateCW()));
-      PressCommands.Add(new PressCommand(PressCommandType.RotateCCW, Key.X, gm => gm.BlockNow.RotateCCW()));
+      PressCommands.Add(new PressCommand(PressCommandType.RotateCw, Key.Up, gm => gm.BlockNow.RotateCw()));
+      PressCommands.Add(new PressCommand(PressCommandType.RotateCcw, Key.X, gm => gm.BlockNow.RotateCcw()));
       PressCommands.Add(new PressCommand(PressCommandType.Reset, Key.Escape, gm => gm.Reset()));
     }
 

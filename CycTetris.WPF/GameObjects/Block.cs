@@ -1,17 +1,16 @@
-﻿using CycWpfLibrary;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using CycWpfLibrary;
 using static CycTetris.WPF.Constants;
 
 namespace CycTetris.WPF
 {
   public class Block : ICloneable
   {
-    private int _rotation = 0;
-    private PointInt pos;
+    private int _rotation;
+    private PointInt _pos;
 
     public Block()
     {
@@ -23,7 +22,7 @@ namespace CycTetris.WPF
       Pos = SpawnPosDict[type];
     }
 
-    public BlockType Type { get; set; }
+    public BlockType Type { get; }
     public int Rot
     {
       get => _rotation;
@@ -41,17 +40,17 @@ namespace CycTetris.WPF
     }
     public PointInt Pos
     {
-      get => pos;
+      get => _pos;
       set
       {
-        pos = value;
+        _pos = value;
         UpdateParPos();
       }
     }
     public PointInt[] ParPos { get; private set; }
     public void UpdateParPos()
     {
-      ParPos = ParPosDict[(Type, Rot)].Select(p => p + pos).ToArray();
+      ParPos = ParPosDict[(Type, Rot)].Select(p => p + _pos).ToArray();
     }
 
     /// <summary>
@@ -63,16 +62,15 @@ namespace CycTetris.WPF
     public void Left() => Pos -= (1, 0);
     public void Right() => Pos += (1, 0);
     public void Down() => Pos += (0, 1);
-    public void RotateCW() => Rot++;
-    public void RotateCCW() => Rot--;
+    public void RotateCw() => Rot++;
+    public void RotateCcw() => Rot--;
 
     public object Clone()
     {
-      return new Block
+      return new Block(Type)
       {
-        Type = Type,
         Pos = new PointInt(Pos.X, Pos.Y),
-        Rot = Rot,
+        Rot = Rot
       };
     }
     public override bool Equals(object obj)

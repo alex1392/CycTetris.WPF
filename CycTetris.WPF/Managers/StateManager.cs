@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace CycTetris.WPF
 {
@@ -26,7 +22,7 @@ namespace CycTetris.WPF
 
     }
 
-    public void HandleCommand(List<StateCommand> commands, GameManager gm)
+    public void HandleStateCommand(List<StateCommand> commands, GameManager gm)
     {
       foreach (var command in commands)
       {
@@ -50,7 +46,7 @@ namespace CycTetris.WPF
 
     public void Update(GameManager gm)
     {
-      for (int i = 0; i < States.Count; i++)
+      for (var i = 0; i < States.Count; i++)
       {
         var state = States[i];
         if (!(state is IUpdateState uState))

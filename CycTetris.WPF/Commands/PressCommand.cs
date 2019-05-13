@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Input;
-using CycWpfLibrary;
 
 namespace CycTetris.WPF
 {

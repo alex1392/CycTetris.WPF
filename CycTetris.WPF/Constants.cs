@@ -1,7 +1,6 @@
 ﻿using CycWpfLibrary;
 using System.Collections.Generic;
 using System.Windows;
-using static CycWpfLibrary.Math;
 
 namespace CycTetris.WPF
 {
@@ -14,14 +13,15 @@ namespace CycTetris.WPF
     public const int LD = 24; // Lock Delay
 
     public const int DLD = 3; // Down Lock Delay
+    // ReSharper disable once InconsistentNaming
     public static bool IsDLD = false;
 
     public static class PlayField
     {
       // Logic
-      public const int w = 10;
-      public const int h = 20;
-      public const int hh = 2; // hidden height
+      public const int W = 10;
+      public const int H = 20;
+      public const int HH = 2; // hidden height
     }
 
     public static readonly Dictionary<(BlockType, int rotation), List<Point>> ParPosDict = new Dictionary<(BlockType, int rotation), List<Point>>
@@ -368,6 +368,8 @@ namespace CycTetris.WPF
       { (0, 3, 4), new PointInt(+1, +2) },
     };
 
+    public const int TEST_N = 4;
+    // ReSharper disable once InconsistentNaming
     public static readonly Dictionary<(int fromR, int toR, int testN), PointInt> IWallKickDict = new Dictionary<(int fromR, int toR, int testN), PointInt>
     {
       { (0, 1, 1), new PointInt(-2, +0) },
@@ -410,7 +412,6 @@ namespace CycTetris.WPF
       { (0, 3, 3), new PointInt(-1, -2) },
       { (0, 3, 4), new PointInt(+2, +1) },
     };
-    public const int testN = 4;
 
   }
 }

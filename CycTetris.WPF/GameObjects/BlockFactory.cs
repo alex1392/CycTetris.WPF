@@ -1,7 +1,6 @@
 ﻿using CycWpfLibrary;
 using System.Collections.Generic;
 using System.Linq;
-using static CycWpfLibrary.Math;
 
 namespace CycTetris.WPF
 {
@@ -34,7 +33,7 @@ namespace CycTetris.WPF
     public IEnumerable<Block> GetNextBlocks(int count)
     {
       var blocks = new List<Block>();
-      for (int i = 0; i < count; i++)
+      for (var i = 0; i < count; i++)
       {
         blocks.Add(GetNextBlock());
       }

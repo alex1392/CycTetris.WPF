@@ -1,12 +1,7 @@
 ﻿using CycWpfLibrary;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Data;
-using System.Windows.Markup;
 using System.Windows.Media;
 
 namespace CycTetris.WPF
@@ -16,6 +11,7 @@ namespace CycTetris.WPF
     public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
       Color color;
+      Debug.Assert(value != null, nameof(value) + " != null");
       switch ((BlockType)value)
       {
         case BlockType.Z:
@@ -40,7 +36,6 @@ namespace CycTetris.WPF
           color = Colors.Yellow;
           break;
         default:
-        case BlockType.None:
           color = Colors.Transparent;
           break;
       }
